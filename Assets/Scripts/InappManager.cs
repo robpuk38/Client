@@ -10,7 +10,7 @@ public class InappManager : MonoBehaviour, IStoreListener
     private static IExtensionProvider m_StoreExtensionProvider; 
 
   
-    public static string kProductIDConsumable = "consumable";
+   public static string kProductIDConsumable = "consumable";
     public static string kProductIDNonConsumable = "nonconsumable";
     public static string kProductIDSubscription = "subscription";
 

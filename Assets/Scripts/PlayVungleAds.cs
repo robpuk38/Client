@@ -7,10 +7,13 @@ public class PlayVungleAds : MonoBehaviour
 {
 
 
-    public Text DebugText;
+   public Text DebugText;
+    public GameObject VungleBtn;
+    public GameObject Disable;
 
     public string AppId = "58d3030b64b3bf8742000250";
   
+    bool CompleteAd = false;
 
     Dictionary<string, object> options;
 
@@ -30,6 +33,8 @@ public class PlayVungleAds : MonoBehaviour
     private void Init(string AppId)
     {
         Vungle.init(AppId, null, null);
+        VungleBtn.GetComponent<Button>().enabled = false;
+        Disable.SetActive(true);
         RequestAd();
     }
 
@@ -45,11 +50,16 @@ public class PlayVungleAds : MonoBehaviour
     {
         Vungle.onAdStartedEvent += () => {
             DebugText.text = "On Ad Started";
-            int newcredits = 0;
-            int.TryParse(DataManager.Instance.GetUserCredits(), out newcredits);
-            int pushcredits = newcredits + 200;
-            DataManager.Instance.SetUserCredits(pushcredits.ToString());
-            DataManager.Instance.SaveUsersData();
+
+            if (CompleteAd == false)
+            {
+                CompleteAd = true;
+                int newcredits = 0;
+                int.TryParse(DataManager.Instance.GetUserCredits(), out newcredits);
+                int pushcredits = newcredits + 100;
+                DataManager.Instance.SetUserCredits(pushcredits.ToString());
+             
+            }
 
         };
         
@@ -58,8 +68,8 @@ public class PlayVungleAds : MonoBehaviour
         Vungle.onAdFinishedEvent += (args) =>
         {
             DebugText.text = "On Ad Finished: "+ args;
+            CompleteAd = false;
 
-            
         };
 
         Vungle.adPlayableEvent += (adPlayable) => {
@@ -68,9 +78,13 @@ public class PlayVungleAds : MonoBehaviour
             if (adPlayable)
             {
                 DebugText.text = "An ad is ready to show!";
+                VungleBtn.GetComponent<Button>().enabled = true;
+                Disable.SetActive(false);
             }
             else
             {
+                VungleBtn.GetComponent<Button>().enabled = false;
+                Disable.SetActive(true);
                 DebugText.text = "No ad is available at this moment.";
             }
         };

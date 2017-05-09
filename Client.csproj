@@ -132,18 +132,22 @@
     <Compile Include="Assets\AdColony\Scripts\Common\AdColonyUserMetadata.cs" />
     <Compile Include="Assets\AdColony\Scripts\Common\AdColonyUtils.cs" />
     <Compile Include="Assets\AdColony\Scripts\Common\AdColonyZone.cs" />
+    <Compile Include="Assets\Scripts\AndroidManager.cs" />
     <Compile Include="Assets\Scripts\ChatManager.cs" />
     <Compile Include="Assets\Scripts\DataManager.cs" />
     <Compile Include="Assets\Scripts\FacebookManager.cs" />
+    <Compile Include="Assets\Scripts\GPSManager.cs" />
     <Compile Include="Assets\Scripts\InappManager.cs" />
     <Compile Include="Assets\Scripts\LoadingManager.cs" />
     <Compile Include="Assets\Scripts\MainCamera.cs" />
     <Compile Include="Assets\Scripts\MysqlManager.cs" />
     <Compile Include="Assets\Scripts\PlayAdcolonyAds.cs" />
     <Compile Include="Assets\Scripts\PlayVungleAds.cs" />
+    <Compile Include="Assets\Scripts\PopUpContationManager.cs" />
     <Compile Include="Assets\Scripts\ServerStatusManager.cs" />
     <Compile Include="Assets\Scripts\SpawnMessageList.cs" />
     <Compile Include="Assets\Scripts\UI_DestroyMessage.cs" />
+    <Compile Include="Assets\Scripts\Ui_RotateBG.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\FacebookSDK\link.xml" />

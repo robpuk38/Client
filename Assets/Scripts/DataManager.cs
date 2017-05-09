@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,12 +23,50 @@ public class DataManager : MonoBehaviour {
     public Text UserMana;
     public Text UserHealth;
     public Text UserExp;
+    public Text UserGpsX;
+    public Text UserGpsY;
+    public Text UserGpsZ;
+    public GameObject UserImagePic;
 
 
     private void Awake()
     {
         instance = this;
     }
+
+   
+    private IEnumerator getuserspic;
+    IEnumerator loadUsersPic(GameObject go, string url)
+    {
+        Debug.Log("CALLLED MORE THEN IT SHOULD BE FOR SOME REASON ");
+
+        if (url.ToString() != null && url.ToString() != "" && url.ToString() != "USERPIC")
+        {
+            Texture2D temp = new Texture2D(0, 0);
+            WWW www = new WWW(url);
+            yield return www;
+
+            
+            
+                temp = www.texture;
+                Sprite sprite = Sprite.Create(temp, new Rect(0, 0, temp.width, temp.height), new Vector2(0.5f, 0.5f));
+                Transform themb = go.transform;
+                themb.GetComponent<Image>().sprite = sprite;
+
+           
+
+        }
+
+    }
+
+
+    public void new2dpicture(GameObject go, string url)
+    {
+        getuserspic = loadUsersPic(go, url);
+        StartCoroutine(getuserspic);
+    }
+
+
     public void SetId(string set)
     {
        Id.text = set;
@@ -187,16 +226,36 @@ public class DataManager : MonoBehaviour {
         return UserExp.text;
     }
 
-    public void SaveUsersData()
+   
+
+    public void SetUserGpsX(string set)
     {
-        MysqlManager.Instance.SaveUsersData(this.GetUserId(), 
-            this.GetUserAccessToken(), 
-            this.GetUserCredits(), 
-            this.GetUserLevel(), 
-            this.GetUserMana(), 
-            this.GetUserHealth(), 
-            this.GetUserExp(),
-            this.GetUserState());
+        UserGpsX.text = set;
+    }
+
+    public string GetUserGpsX()
+    {
+        return UserGpsX.text;
+    }
+
+    public void SetUserGpsY(string set)
+    {
+        UserGpsY.text = set;
+    }
+
+    public string GetUserGpsY()
+    {
+        return UserGpsY.text;
+    }
+
+    public void SetUserGpsZ(string set)
+    {
+        UserGpsZ.text = set;
+    }
+
+    public string GetUserGpsZ()
+    {
+        return UserGpsZ.text;
     }
 
 

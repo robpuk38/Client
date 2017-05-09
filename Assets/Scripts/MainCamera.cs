@@ -1,73 +1,63 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class MainCamera : MonoBehaviour {
 
-    private Gyroscope Gyro;
-    private GameObject CamConatiner;
-    private Quaternion Roatation;
-    private bool isGyroReady = false;
-    
-    private new WebCamTexture camera;
-    public RawImage CameraBackGround;
-    public AspectRatioFitter fit;
+    //gyro
+    private Gyroscope gyro;
+    private GameObject cameraContainer;
+    private Quaternion rotation;
 
-    private void Start()
+
+
+    private bool arReady = false;
+
+
+
+    // Use this for initialization
+    void Start()
     {
+
+        //check if we support both services
         if (!SystemInfo.supportsGyroscope)
         {
+            //Debug.Log ("This Devices Dose Not Support Gyro");
             return;
         }
 
 
-        for(int i = 0; i < WebCamTexture.devices.Length; i++)
-        {
+        cameraContainer = new GameObject("Camera Container");
+        cameraContainer.transform.position = transform.position;
+        transform.SetParent(cameraContainer.transform);
 
-            if(!WebCamTexture.devices[i].isFrontFacing)
-            {
-                camera = new WebCamTexture(WebCamTexture.devices[i].name, Screen.width, Screen.height);
-                break;
-            }
+        gyro = Input.gyro;
+        gyro.enabled = true;
 
-        }
+        cameraContainer.transform.rotation = Quaternion.Euler(90f, 0, 0);
 
-        if(camera == null)
-        {
-            return;
-        }
+        rotation = new Quaternion(0, 0, 1, 0);
 
+        arReady = true;
 
-        CamConatiner = new GameObject("Camera Container");
-        CamConatiner.transform.position = this.transform.position;
-        this.transform.SetParent(CamConatiner.transform);
-
-        Gyro = Input.gyro;
-        Gyro.enabled = true;
-
-        CamConatiner.transform.rotation = Quaternion.Euler(90f, 0, 0);
-        Roatation = new Quaternion(0, 0, 1, 0);
-        camera.Play();
-        CameraBackGround.texture = camera;
-        isGyroReady = true;
-        
 
     }
 
-    private void FixedUpdate()
+    // Update is called once per frame
+    void Update()
     {
-        if (isGyroReady == true && SystemInfo.supportsGyroscope)
+
+        if (arReady)
         {
-            float Ratio = (float)camera.width / (float)camera.height;
-            fit.aspectRatio = Ratio;
-            float ScaleY = camera.videoVerticallyMirrored ? -1.0f : 1.0f;
-            CameraBackGround.rectTransform.localScale = new Vector3(1f,ScaleY,1f);
-            int Orientaion = -camera.videoRotationAngle;
-            CameraBackGround.rectTransform.localEulerAngles = new Vector3(0,0, Orientaion);
-            this.transform.localRotation = Gyro.attitude * Roatation;
+
+
+            transform.localRotation = gyro.attitude * rotation;
+
+
         }
     }
 
-   
+
 }

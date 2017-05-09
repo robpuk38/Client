@@ -100,8 +100,10 @@ public class MysqlManager : MonoBehaviour {
                 }
             }
         }
-
-        FacebookManager.Instance.MemoryData();
+        if (FacebookManager.Instance != null)
+        {
+            FacebookManager.Instance.MemoryData();
+        }
 
         yield return null;
     }

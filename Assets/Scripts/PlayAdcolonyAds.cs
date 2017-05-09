@@ -6,8 +6,12 @@ using UnityEngine.UI;
 public class PlayAdcolonyAds : MonoBehaviour {
 
     public Text DebugText;
+    public GameObject AdcolonyBtn;
+    public GameObject Disable;
     public string AppId = "app45c8b1591bd14f93a2";
     public string ZoneId = "vz83776cea456c492b95";
+
+    bool CompleteAd = false;
    
     AdColony.InterstitialAd Ad = null;
     private void Awake()
@@ -23,7 +27,7 @@ public class PlayAdcolonyAds : MonoBehaviour {
     private void ConfigureAds()
     {
         DebugText.text = "Ads Being Configured";
-
+        AdcolonyBtn.GetComponent<Button>().enabled = false;
         AdColony.AppOptions appOptions = new AdColony.AppOptions();
         AdColony.Ads.Configure(AppId, appOptions, ZoneId);
 
@@ -42,6 +46,8 @@ public class PlayAdcolonyAds : MonoBehaviour {
         intEvenetHandler();
     }
 
+    
+
     private void intEvenetHandler()
     {
 
@@ -52,19 +58,23 @@ public class PlayAdcolonyAds : MonoBehaviour {
 
         AdColony.Ads.OnRequestInterstitial += (AdColony.InterstitialAd ad_) => {
             DebugText.text = "Ads Request Has Requested Interstiler Ad "+ ad_.ToString();
-
+           
             Ad = ad_;
+            Disable.SetActive(false);
+            AdcolonyBtn.GetComponent<Button>().enabled = true;
         };
 
         AdColony.Ads.OnRequestInterstitialFailed += () =>
         {
             DebugText.text = "Ads Request Has Failed";
-            
+            AdcolonyBtn.GetComponent<Button>().enabled = false;
+            Disable.SetActive(true);
+
         };
 
         AdColony.Ads.OnOpened += (AdColony.InterstitialAd ad_) => {
             DebugText.text = "Ad Has Been Open "+ ad_.ToString();
-            
+            CompleteAd = false;
         };
 
         AdColony.Ads.OnClosed += (AdColony.InterstitialAd ad_) => {
@@ -75,6 +85,8 @@ public class PlayAdcolonyAds : MonoBehaviour {
 
         AdColony.Ads.OnExpiring += (AdColony.InterstitialAd ad_) => {
             DebugText.text = "Ad Is Expiring " + ad_.ToString();
+            AdcolonyBtn.GetComponent<Button>().enabled = false;
+            Disable.SetActive(true);
         };
 
         AdColony.Ads.OnIAPOpportunity += (AdColony.InterstitialAd ad_, string iapProductId_, AdColony.AdsIAPEngagementType engagement_) =>
@@ -85,13 +97,18 @@ public class PlayAdcolonyAds : MonoBehaviour {
         AdColony.Ads.OnRewardGranted += (string zoneId, bool success, string name, int amount) =>
         {
             DebugText.text = string.Format("AdColony.Ads.OnRewardGranted ", zoneId, success, name, amount);
-            int newcredits = 0;
-            int.TryParse(DataManager.Instance.GetUserCredits(), out newcredits);
-            int pushcredits = newcredits + 200;
-           
-            DataManager.Instance.SetUserCredits(pushcredits.ToString());
-            DataManager.Instance.SaveUsersData();
-          
+
+            if (CompleteAd == false)
+            {
+                CompleteAd = true;
+                int newcredits = 0;
+                int.TryParse(DataManager.Instance.GetUserCredits(), out newcredits);
+                int pushcredits = newcredits + 100;
+                DataManager.Instance.SetUserCredits(pushcredits.ToString());
+            }
+
+
+
         };
 
         AdColony.Ads.OnCustomMessageReceived += (string type, string message) =>
