@@ -56,7 +56,7 @@ public class AndroidManager : MonoBehaviour {
         AndroidJavaObject currentActivity;
         AndroidJavaObject contentResolver;
         AndroidJavaClass secure;
-        string android_id;
+        string android_id = "No Android";
         try
         {
             up = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
@@ -74,6 +74,7 @@ public class AndroidManager : MonoBehaviour {
                             android_id = secure.CallStatic<string>("getString", contentResolver, "android_id");
                             try
                             {
+                                DataManager.Instance.SetUserDeviceId(android_id);
                                 return android_id;
                             }
                             catch (Exception ex)
@@ -112,8 +113,8 @@ public class AndroidManager : MonoBehaviour {
             Debug.Log("ANDROID ERROR 8: " + ex.Message);
             ServerStatusManager.Instance.Message.text = ex.Message;
         }
-
-        return "No Android";
+        DataManager.Instance.SetUserDeviceId(android_id);
+        return android_id;
 
 
     }

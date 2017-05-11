@@ -26,15 +26,33 @@ public class DataManager : MonoBehaviour {
     public Text UserGpsX;
     public Text UserGpsY;
     public Text UserGpsZ;
+    public Text UserActivation;
+    public Text UserIpAddress;
+    public Text UserFirstTimeLogin;
+    public Text UserDeviceId;
+    public Text UserXPos;
+    public Text UserYPos;
+    public Text UserZPos;
+    public Text UserXRot;
+    public Text UserYRot;
+    public Text UserZRot;
+    public Text UserAdsMod;
     public GameObject UserImagePic;
+    public InputField UserinputCredits;
 
 
     private void Awake()
     {
         instance = this;
+        UserinputCredits.onValueChanged.AddListener(delegate { ValueChangeCheck(); });
     }
 
-   
+    public void ValueChangeCheck()
+    {
+        Debug.Log("Value Changed");
+        instance.SetUserAdsMod(Construct._ONE);
+    }
+
     private IEnumerator getuserspic;
     IEnumerator loadUsersPic(GameObject go, string url)
     {
@@ -64,6 +82,113 @@ public class DataManager : MonoBehaviour {
     {
         getuserspic = loadUsersPic(go, url);
         StartCoroutine(getuserspic);
+
+    }
+
+    public void SetUserZRot(string set)
+    {
+        UserZRot.text = set;
+    }
+
+    public string GetUserZRot()
+    {
+        return UserZRot.text;
+    }
+
+    public void SetUserYRot(string set)
+    {
+        UserYRot.text = set;
+    }
+
+    public string GetUserYRot()
+    {
+        return UserYRot.text;
+    }
+
+    public void SetUserXRot(string set)
+    {
+        UserXRot.text = set;
+    }
+
+    public string GetUserXRot()
+    {
+        return UserXRot.text;
+    }
+
+    public void SetUserZPos(string set)
+    {
+        UserZPos.text = set;
+    }
+
+    public string GetUserZPos()
+    {
+        return UserZPos.text;
+    }
+
+
+    public void SetUserYPos(string set)
+    {
+        UserYPos.text = set;
+    }
+
+    public string GetUserYPos()
+    {
+        return UserYPos.text;
+    }
+
+    public void SetUserXPos(string set)
+    {
+        UserXPos.text = set;
+    }
+
+    public string GetUserXPos()
+    {
+        return UserXPos.text;
+    }
+
+
+    public void SetUserDeviceId(string set)
+    {
+        UserDeviceId.text = set;
+    }
+
+    public string GetUserDeviceId()
+    {
+        return UserDeviceId.text;
+    }
+
+    public void SetUserIpAddress(string set)
+    {
+        UserIpAddress.text = set;
+    }
+
+    public string GetUserIpAddress()
+    {
+        return UserIpAddress.text;
+    }
+
+
+
+    public void SetUserFirstTimeLogin(string set)
+    {
+        UserFirstTimeLogin.text = set;
+    }
+
+    public string GetUserFirstTimeLogin()
+    {
+        return UserFirstTimeLogin.text;
+    }
+
+
+
+    public void SetUserActivation(string set)
+    {
+        UserActivation.text = set;
+    }
+
+    public string GetUserActivation()
+    {
+        return UserActivation.text;
     }
 
 
@@ -78,15 +203,28 @@ public class DataManager : MonoBehaviour {
     }
     public void SetUserId(string set)
     {
-        PlayerPrefs.SetString("UserId", set);
+        //PlayerPrefs.SetString("UserId", set);
         UserId.text = set;
     }
 
     public string GetUserId()
     {
-        UserId.text = PlayerPrefs.GetString("UserId");
+        //UserId.text = PlayerPrefs.GetString("UserId");
         return UserId.text;
     }
+
+    public void SetUserAdsMod(string set)
+    {
+        //PlayerPrefs.SetString("UserId", set);
+        UserAdsMod.text = set;
+    }
+
+    public string GetUserAdsMod()
+    {
+        //UserId.text = PlayerPrefs.GetString("UserId");
+        return UserAdsMod.text;
+    }
+    
 
     public void SetUserName(string set)
     {
@@ -135,13 +273,13 @@ public class DataManager : MonoBehaviour {
 
     public void SetUserAccessToken(string set)
     {
-        PlayerPrefs.SetString("UserAccessToken", set);
+       // PlayerPrefs.SetString("UserAccessToken", set);
         UserAccessToken.text = set;
     }
 
     public string GetUserAccessToken()
     {
-        UserAccessToken.text = PlayerPrefs.GetString("UserAccessToken");
+        //UserAccessToken.text = PlayerPrefs.GetString("UserAccessToken");
         return UserAccessToken.text;
     }
 
@@ -169,7 +307,7 @@ public class DataManager : MonoBehaviour {
 
     public void SetUserCredits(string set)
     {
-
+        UserinputCredits.text = set;
         UserCredits.text = set;
         
     }

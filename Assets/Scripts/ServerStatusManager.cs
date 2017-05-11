@@ -4,8 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System;
 using System.Text;
-using System.Collections;
-//using System.Threading;
+
 
 public class ServerStatusManager : MonoBehaviour
 {
@@ -18,19 +17,13 @@ public class ServerStatusManager : MonoBehaviour
     public GameObject ServerStatusContainor;
     public string IpAddress = "127.0.0.1";
     public int port = 3000;
-    private string blowfishkey = "c2VydmVyIGNvbm5lY3Rpb24gdHlwZQ==";
+    
 
     private string data = "";
     private Socket sender;
     private IPEndPoint remoteEP;
 
-
-
-
-
-
-
-    private bool ServerStatus = false;
+   
 
     private void Awake()
     {
@@ -38,26 +31,18 @@ public class ServerStatusManager : MonoBehaviour
     }
 
 
-
+    
     private void Disconnected(Socket sender)
     {
-        Debug.Log("DISCONNECTING CLIENTS SOCKET NOW");
         sender.Shutdown(SocketShutdown.Both);
         sender.Close();
     }
 
-    private void ServerSocketConnect()
+   
+    public void SendNewDataType(string type)
     {
-
-
-
-
-        byte[] bytes = new byte[1024];
-
-
         try
         {
-
             remoteEP = new IPEndPoint(IPAddress.Parse(IpAddress), port);
 
             // Create a TCP/IP  socket.  
@@ -68,313 +53,343 @@ public class ServerStatusManager : MonoBehaviour
             {
                 sender.Connect(remoteEP);
 
-                Debug.Log("Socket connected to {0}" + sender.RemoteEndPoint.ToString());
-
-
-
-                if (DataManager.Instance != null
-                         && DataManager.Instance.GetUserId() != null
-                         && DataManager.Instance.GetUserId() != ""
-                         && DataManager.Instance.GetUserId() != "USERID"
-                         && DataManager.Instance.GetUserAccessToken() != null
-                         && DataManager.Instance.GetUserAccessToken() != ""
-                         && DataManager.Instance.GetUserAccessToken() != "USERACCESSTOKEN")
+                if(type == Construct.ONAWAKE)
                 {
-
-
-                    // This user has already login before and we have already set the users saved pref
-
-                    if (DataManager.Instance.GetUserState() == "0" || DataManager.Instance.GetUserState() == "USERSTATE")
-                    {
-
-
-                        DataManager.Instance.SetUserState("0");
-                        data = "|SOCKETTYPE|" + "Awake_" + blowfishkey +
-                            "|USERACCESSTOKEN|" + DataManager.Instance.GetUserAccessToken() +
-                            "|USERID|" + DataManager.Instance.GetUserId() +
-                            "|LOGINSTATUS|" + DataManager.Instance.GetUserState();
-                    }
-                    else if (DataManager.Instance.GetUserState() == "1")
-                    {
-                        data = "|SOCKETTYPE|" + "Loggingin_" + blowfishkey +
-                            "|USERACCESSTOKEN|" + DataManager.Instance.GetUserAccessToken() +
-                            "|USERID|" + DataManager.Instance.GetUserId() +
-                            "|LOGINSTATUS|" + DataManager.Instance.GetUserState()
-                            + "|ANDROIDDEVICEID|" + AndroidManager.Instance.GetAndroidDeviceID()
-                            + "|CLIENTSIPADDRESS|" + GetIPAddress()
-                            + "|USERCREDITS|" + DataManager.Instance.GetUserCredits()
-                            + "|USERGPSX|" + DataManager.Instance.GetUserGpsX()
-                            + "|USERGPSY|" + DataManager.Instance.GetUserGpsY()
-                            + "|USERGPSZ|" + DataManager.Instance.GetUserGpsZ()
-                            + "|USERFIRSTNAME|" + DataManager.Instance.GetUserFirstName()
-                            + "|USERLASTNAME|" + DataManager.Instance.GetUserLastName()
-                            + "|USERNAME|" + DataManager.Instance.GetUserName()
-                            + "|USERPIC|" + DataManager.Instance.GetUserPic();
-                    }
-                    else if (DataManager.Instance.GetUserState() == "2")
-                    {
-                        data = "|SOCKETTYPE|" + "Logged_" + blowfishkey +
-                            "|USERACCESSTOKEN|" + DataManager.Instance.GetUserAccessToken() +
-                            "|USERID|" + DataManager.Instance.GetUserId() +
-                            "|LOGINSTATUS|" + DataManager.Instance.GetUserState()
-                            + "|ANDROIDDEVICEID|" + AndroidManager.Instance.GetAndroidDeviceID()
-                            + "|CLIENTSIPADDRESS|" + GetIPAddress()
-                            + "|USERCREDITS|" + DataManager.Instance.GetUserCredits()
-                            + "|USERGPSX|" + DataManager.Instance.GetUserGpsX()
-                            + "|USERGPSY|" + DataManager.Instance.GetUserGpsY()
-                            + "|USERGPSZ|" + DataManager.Instance.GetUserGpsZ()
-                            + "|USERFIRSTNAME|" + DataManager.Instance.GetUserFirstName()
-                            + "|USERLASTNAME|" + DataManager.Instance.GetUserLastName()
-                            + "|USERNAME|" + DataManager.Instance.GetUserName()
-                            + "|USERPIC|" + DataManager.Instance.GetUserPic();
-                    }
-
-
-
+                    SendData(sender, ONAWAKE());
+                    
+                }
+                if (type == Construct.ONADS)
+                {
+                    SendData(sender, ONADS());
 
                 }
-                else
+                if (type == Construct.ONLOGIN)
                 {
-
-
-                    PrepNewClientData(sender, bytes);
-
-                    return;
+                    SendData(sender, ONLOGIN());
 
                 }
-                SendData(sender, data);
+                if (type == Construct.ONLOGOUT)
+                {
+                    SendData(sender, ONLOGOUT());
+
+                }
+                byte[] bytes = new Byte[sender.SendBufferSize];
                 RecivedData(sender, bytes);
-
-
+                //SendData(sender, data);
+                //
             }
             catch (ArgumentNullException ane)
             {
-                Debug.Log("ArgumentNullException : {0}" + ane.ToString());
+                //Debug.Log("ArgumentNullException : {0}" + ane.ToString());
             }
             catch (SocketException se)
             {
-                Debug.Log("SocketException : {0}" + se.ToString());
-                if (AndroidManager.Instance != null)
-                {
-                    Message.text = "Server Offline: " + AndroidManager.Instance.GetAndroidDeviceID();
-                }
+                //Debug.Log("SocketException : {0}" + se.ToString());
+
 
             }
             catch (Exception e)
             {
-                Debug.Log("Unexpected exception : {0}" + e.ToString());
+                //Debug.Log("Unexpected exception : {0}" + e.ToString());
             }
 
 
         }
         catch (Exception e)
         {
-            Debug.Log(e.ToString());
+            //Debug.Log(e.ToString());
         }
-
-
-
-
     }
 
 
+   public bool CheckIfLoadedImage { get; set; }
+    public bool CheckAndSendOnce { get; set; }
 
-
-    private bool CheckIfLoadedImage = false;
-    private void RecivedData(Socket sender, byte[] bytes)
+    private void ClientUpdateDataManager(string data)
     {
-
-        try
+        string[] aData = data.Split('|');
+        for (int i = 0; i < aData.Length - 1; i++)
         {
-            if (bytes.Length > 0)
+
+            if (aData[i] == Construct._ID)
             {
-                int bytesRec = sender.Receive(bytes);
 
-                data = Encoding.ASCII.GetString(bytes, 0, bytesRec);
-                Debug.Log("WE GOT: " + data);
-                string[] aData = data.Split('|');
-                for (int i = 0; i < aData.Length - 1; i++)
+                //Debug.Log(Construct._ID + " " + aData[i + 1]);
+                DataManager.Instance.SetId(aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._USERACCESS)
+            {
+
+                //Debug.Log(Construct._USERACCESS + " " + aData[i + 1]);
+                DataManager.Instance.SetUserAccess(aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._USERACCESSTOKEN)
+            {
+
+                //Debug.Log(Construct._USERACCESSTOKEN + " " + aData[i + 1]);
+                DataManager.Instance.SetUserAccessToken(aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._USERACTIVATION)
+            {
+
+                //Debug.Log(Construct._USERACTIVATION + " " + aData[i + 1]);
+                DataManager.Instance.SetUserActivation(aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._USERCREDITS)
+            {
+
+                //Debug.Log(Construct._USERCREDITS + " " + aData[i + 1]);
+                DataManager.Instance.SetUserCredits(aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._USERDEVICEID)
+            {
+
+                //Debug.Log(Construct._USERDEVICEID + " " + aData[i + 1]);
+
+                if (aData[i + 1] != DataManager.Instance.GetUserDeviceId())
                 {
-
-                    if (aData[i] == "NEWCLIENTWATINGLOGIN")
-                    {
-                        Debug.Log("NEWCLIENTWATINGLOGIN: ");
-
-                        PrepNewClientData(sender, bytes);
-
-                    }
-
-                    if (aData[i] == "ANDROIDDEVICEID")
-                    {
-
-                        Debug.Log("ANDROIDDEVICEID: " + aData[i + 1]);
-                    }
-                    if (aData[i] == "CLIENTSIPADDRESS")
-                    {
-
-                        Debug.Log("CLIENTSIPADDRESS: " + aData[i + 1]);
-                    }
-                    if (aData[i] == "CLIENTSIPADDRESS")
-                    {
-
-                        Debug.Log("CLIENTSIPADDRESS: " + aData[i + 1]);
-                    }
-
-                    if (aData[i] == "ID")
-                    {
-
-                        DataManager.Instance.SetId(aData[i + 1]);
-                        Debug.Log("ID: " + aData[i + 1]);
-                    }
-                    if (aData[i] == "USERID")
-                    {
-                        DataManager.Instance.SetUserId(aData[i + 1]);
-                        Debug.Log("USERID: " + aData[i + 1]);
-                    }
-                    if (aData[i] == "USERNAME")
-                    {
-                        DataManager.Instance.SetUserName(aData[i + 1]);
-                        Debug.Log("USERNAME: " + aData[i + 1]);
-                    }
-                    if (aData[i] == "USERPIC")
-                    {
-
-                        Debug.Log("USERPIC: " + aData[i + 1]);
-                        if (aData[i + 1] == "USERFIRSTNAME")
-                        {
-                            Debug.Log("USERPIC: WTF DATA " + aData[i + 1]);
-                            string userPicture = "https://graph.facebook.com/" + DataManager.Instance.GetUserId() + "/picture?width=200";
-                            // DataManager.Instance.new2dpicture(DataManager.Instance.UserImagePic, userPicture);
-                            DataManager.Instance.SetUserPic(userPicture);
-                        }
-                        else
-                        {
-                            if (CheckIfLoadedImage == false)
-                            {
-                                DataManager.Instance.new2dpicture(DataManager.Instance.UserImagePic, aData[i + 1]);
-                                CheckIfLoadedImage = true;
-                            }
-                        }
-
-                    }
-                    if (aData[i] == "USERFIRSTNAME")
-                    {
-                        DataManager.Instance.SetUserFirstName(aData[i + 1]);
-                        Debug.Log("USERFIRSTNAME: " + aData[i + 1]);
-                    }
-                    if (aData[i] == "USERLASTNAME")
-                    {
-                        DataManager.Instance.SetUserLastName(aData[i + 1]);
-                        Debug.Log("USERLASTNAME: " + aData[i + 1]);
-                    }
-                    if (aData[i] == "USERACCESSTOKEN")
-                    {
-                        DataManager.Instance.SetUserAccessToken(aData[i + 1]);
-                        Debug.Log("USERACCESSTOKEN: " + aData[i + 1]);
-                    }
-                    if (aData[i] == "USERSTATE")
-                    {
-                        DataManager.Instance.SetUserState(aData[i + 1]);
-                        Debug.Log("USERSTATE: " + aData[i + 1]);
-                    }
-                    if (aData[i] == "USERACCESS")
-                    {
-                        DataManager.Instance.SetUserAccess(aData[i + 1]);
-                        Debug.Log("USERACCESS: " + aData[i + 1]);
-                    }
-                    if (aData[i] == "USERCREDITS")
-                    {
-                        DataManager.Instance.SetUserCredits(aData[i + 1]);
-                        Debug.Log("USERCREDITS: " + aData[i + 1]);
-                    }
-                    if (aData[i] == "USERLEVEL")
-                    {
-                        DataManager.Instance.SetUserLevel(aData[i + 1]);
-                        Debug.Log("USERLEVEL: " + aData[i + 1]);
-                    }
-                    if (aData[i] == "USERMANA")
-                    {
-                        DataManager.Instance.SetUserMana(aData[i + 1]);
-                        Debug.Log("USERMANA: " + aData[i + 1]);
-                    }
-                    if (aData[i] == "USERHEALTH")
-                    {
-                        DataManager.Instance.SetUserHealth(aData[i + 1]);
-                        Debug.Log("USERHEALTH: " + aData[i + 1]);
-                    }
-                    if (aData[i] == "USEREXP")
-                    {
-                        DataManager.Instance.SetUserExp(aData[i + 1]);
-                        Debug.Log("USEREXP: " + aData[i + 1]);
-                    }
-                    if (aData[i] == "USERXPOS")
-                    {
-
-                        Debug.Log("USERXPOS: " + aData[i + 1]);
-                    }
-                    if (aData[i] == "USERYPOS")
-                    {
-
-                        Debug.Log("USERYPOS: " + aData[i + 1]);
-                    }
-                    if (aData[i] == "USERZPOS")
-                    {
-
-                        Debug.Log("USERZPOS: " + aData[i + 1]);
-                    }
-                    if (aData[i] == "USERXROT")
-                    {
-
-                        Debug.Log("USERXROT: " + aData[i + 1]);
-                    }
-                    if (aData[i] == "USERYROT")
-                    {
-
-                        Debug.Log("USERYROT: " + aData[i + 1]);
-                    }
-                    if (aData[i] == "USERZROT")
-                    {
-
-                        Debug.Log("USERZROT: " + aData[i + 1]);
-                    }
-                    if (aData[i] == "USERGPSX")
-                    {
-
-                        Debug.Log("USERGPSX: " + aData[i + 1]);
-                    }
-                    if (aData[i] == "USERGPSY")
-                    {
-
-                        Debug.Log("USERGPSY: " + aData[i + 1]);
-                    }
-                    if (aData[i] == "USERGPSZ")
-                    {
-
-                        Debug.Log("USERGPSZ: " + aData[i + 1]);
-                    }
-                    if (aData[i] == "USERFIRSTTIMELOGIN")
-                    {
-
-                        Debug.Log("USERFIRSTTIMELOGIN: " + aData[i + 1]);
-                    }
-
-
+                    //Debug.Log("THIS DEVICE IS NOT MATCHING WITH CURRENT DEVICE");
+                    FacebookManager.Instance.FacebookLogout();
+                }
+                else
+                {
+                    
+                    DataManager.Instance.SetUserDeviceId(aData[i + 1]);
                 }
             }
+
+            if (aData[i] == Construct._USEREXP)
+            {
+
+                //Debug.Log(Construct._USEREXP + " " + aData[i + 1]);
+                DataManager.Instance.SetUserExp(aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._USERFIRSTNAME)
+            {
+
+                //Debug.Log(Construct._USERFIRSTNAME + " " + aData[i + 1]);
+                DataManager.Instance.SetUserFirstName(aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._USERFIRSTTIMELOGIN)
+            {
+
+                //Debug.Log(Construct._USERFIRSTTIMELOGIN + " " + aData[i + 1]);
+                DataManager.Instance.SetUserFirstTimeLogin(aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._USERGPSX)
+            {
+
+                //Debug.Log(Construct._USERGPSX + " " + aData[i + 1]);
+                DataManager.Instance.SetUserGpsX(aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._USERGPSY)
+            {
+
+                //Debug.Log(Construct._USERGPSY + " " + aData[i + 1]);
+                DataManager.Instance.SetUserGpsY(aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._USERGPSZ)
+            {
+
+                //Debug.Log(Construct._USERGPSZ + " " + aData[i + 1]);
+                DataManager.Instance.SetUserGpsZ(aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._USERHEALTH)
+            {
+
+                //Debug.Log(Construct._USERHEALTH + " " + aData[i + 1]);
+                DataManager.Instance.SetUserHealth(aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._USERID)
+            {
+
+                //Debug.Log(Construct._USERID + " " + aData[i + 1]);
+
+                if (aData[i + 1] != Construct._USERID && aData[i + 1] != Construct._ZERO && aData[i + 1] != Construct._USERDEVICEID && aData[i + 1] != Construct._USERADSMODTYPE && aData[i + 1] != Construct._USERSTATE && aData[i + 1] != Construct._NULL)
+                {
+                    //Debug.Log("WE ARE SETTING THE USERS ID AS THIS RIGHT NOW " + aData[i + 1]);
+                    DataManager.Instance.SetUserId(aData[i + 1]);
+                }
+            }
+
+            if (aData[i] == Construct._USERIPADDRESS)
+            {
+
+                //Debug.Log(Construct._USERIPADDRESS + " " + aData[i + 1]);
+
+                if (aData[i + 1] != DataManager.Instance.GetUserIpAddress())
+                {
+                    //Debug.Log("THIS IP IS NOT MATCHING CURRENT IP");
+                    FacebookManager.Instance.FacebookLogout();
+                }
+                else
+                {
+                    
+                    DataManager.Instance.SetUserIpAddress(aData[i + 1]);
+                }
+            }
+
+            if (aData[i] == Construct._USERLASTNAME)
+            {
+
+                //Debug.Log(Construct._USERLASTNAME + " " + aData[i + 1]);
+                DataManager.Instance.SetUserLastName(aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._USERLEVEL)
+            {
+
+                //Debug.Log(Construct._USERLEVEL + " " + aData[i + 1]);
+                DataManager.Instance.SetUserLevel(aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._USERMANA)
+            {
+
+                //Debug.Log(Construct._USERMANA + " " + aData[i + 1]);
+                DataManager.Instance.SetUserMana(aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._USERNAME)
+            {
+
+                //Debug.Log(Construct._USERNAME + " " + aData[i + 1]);
+                DataManager.Instance.SetUserName(aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._USERPIC)
+            {
+
+                //Debug.Log(Construct._USERPIC + " " + aData[i + 1]);
+                DataManager.Instance.SetUserPic(aData[i + 1]);
+                if (CheckIfLoadedImage == false && aData[i + 1] != Construct._USERPIC)
+                {
+                    CheckIfLoadedImage = true;
+                    DataManager.Instance.new2dpicture(DataManager.Instance.UserImagePic, DataManager.Instance.GetUserPic());
+                }
+            }
+
+            if (aData[i] == Construct._USERSTATE)
+            {
+
+                //Debug.Log(Construct._USERSTATE + " " + aData[i + 1]);
+
+                if (aData[i + 1] == Construct._ZERO)
+                {
+                    Debug.Log(Construct._USERSTATE + " OUR USER STATE IS A BIG NOTHING SO WE ARE NOT LOGIN " + aData[i + 1]);
+                    //FacebookManager.Instance.FacebookLogout();
+                }
+                else
+                {
+                    DataManager.Instance.SetUserState(aData[i + 1]);
+                }
+            }
+
+            if (aData[i] == Construct._USERXPOS)
+            {
+
+                //Debug.Log(Construct._USERXPOS + " " + aData[i + 1]);
+                DataManager.Instance.SetUserXPos(aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._USERYPOS)
+            {
+
+                //Debug.Log(Construct._USERYPOS + " " + aData[i + 1]);
+                DataManager.Instance.SetUserYPos(aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._USERZPOS)
+            {
+
+                //Debug.Log(Construct._USERZPOS + " " + aData[i + 1]);
+                DataManager.Instance.SetUserZPos(aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._USERXROT)
+            {
+
+                //Debug.Log(Construct._USERXROT + " " + aData[i + 1]);
+                DataManager.Instance.SetUserXRot(aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._USERYROT)
+            {
+
+                //Debug.Log(Construct._USERYROT + " " + aData[i + 1]);
+                DataManager.Instance.SetUserYRot(aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._USERZROT)
+            {
+
+                //Debug.Log(Construct._USERZROT + " " + aData[i + 1]);
+                DataManager.Instance.SetUserZRot(aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._USERADSMODTYPE)
+            {
+
+                //Debug.Log(Construct._USERADSMODTYPE + " " + aData[i + 1]);
+                DataManager.Instance.SetUserAdsMod(Construct._ZERO);
+            }
+
+        }
+        //lets check if this client has all the data set to know if they are fully login or not
+
+        Debug.Log("USERID: "+ DataManager.Instance.GetUserId());
+        Debug.Log("USERNAME: " + DataManager.Instance.GetUserName());
+        Debug.Log("USERPIC: " + DataManager.Instance.GetUserPic());
+        Debug.Log("USERSTATE: " + DataManager.Instance.GetUserState());
+        if (DataManager.Instance.GetUserId() != Construct._USERID 
+            && DataManager.Instance.GetUserName() != Construct._USERNAME
+            && DataManager.Instance.GetUserPic() != Construct._USERPIC
+             && DataManager.Instance.GetUserState() != Construct._ZERO
+             && CheckAndSendOnce == false)
+        {
+
+            Debug.Log("DID WE MAKE IT IN : ");
+            CheckAndSendOnce = true;
+            FacebookManager.Instance.LoggedMessage.text = "LOGIN";
+            FacebookManager.Instance.FacebookLoginBtn.SetActive(false);
+            FacebookManager.Instance.FacebookLogoutBtn.SetActive(true);
+            DataManager.Instance.SetUserState(Construct._ONE);
+            FacebookManager.Instance.WelcomeMessage.text = "Welcome, " + DataManager.Instance.GetUserFirstName() + " To " + FacebookManager.Instance.AppName;
+            SendNewDataType(Construct.ONLOGIN);
+            FacebookManager.Instance.HasLogout = false;
+        }
+    }
+
+
+    private void RecivedData(Socket sender, byte[] bytes)
+    {
+      int bytesRec = sender.Receive(bytes);
+      data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
+               
+
+      
+            ClientUpdateDataManager(data);
             Disconnected(sender);
-        }
-        catch (SocketException Se)
-        {
-            Debug.Log("ERROR RECIVING SOCKET " + Se.Message);
-        }
-        catch (Exception Se)
-        {
-            Debug.Log("ERROR RECIVING " + Se.Message);
-        }
+            
 
+        
 
+        //Debug.Log("UNK: " + data);
 
-
+        
+        
 
     }
 
@@ -392,57 +407,108 @@ public class ServerStatusManager : MonoBehaviour
             if (IP.AddressFamily == AddressFamily.InterNetwork)
             {
                 ClientsIPAddress = Convert.ToString(IP);
+                DataManager.Instance.SetUserIpAddress(ClientsIPAddress);
             }
         }
         return ClientsIPAddress;
 
     }
 
-    private void PrepNewClientData(Socket sender, byte[] bytes)
+    private string ONAWAKE()
     {
 
-        if (AndroidManager.Instance != null && DataManager.Instance != null)
-        {
-            Debug.Log("PrepNewClientData() WE SENT THE DATA ");
-            // we sent the current information we have to send to the server 
-
-            data = "|SOCKETTYPE|" + "Awake_NewUser_" + blowfishkey
-                + "|ANDROIDDEVICEID|" + AndroidManager.Instance.GetAndroidDeviceID()
-                + "|CLIENTSIPADDRESS|" + GetIPAddress()
-                + "|USERCREDITS|" + DataManager.Instance.GetUserCredits()
-                + "|USERGPSX|" + DataManager.Instance.GetUserGpsX()
-                + "|USERGPSY|" + DataManager.Instance.GetUserGpsY()
-                + "|USERGPSZ|" + DataManager.Instance.GetUserGpsZ();
-
-
-            SendData(sender, data);
-            RecivedData(sender, bytes);
-        }
-        else
-        {
-            Debug.Log("TRYING TO SEND SHIT");
-
-        }
+        data = Construct.CONNECTIONTYPE + Construct.ONAWAKE
+               + Construct.USERDEVICEID + AndroidManager.Instance.GetAndroidDeviceID()
+               + Construct.USERIPADDRESS + GetIPAddress()
+               + Construct.USERCREDITS + DataManager.Instance.GetUserCredits()
+               + Construct.USERGPSX + DataManager.Instance.GetUserGpsX()
+               + Construct.USERGPSY + DataManager.Instance.GetUserGpsY()
+               + Construct.USERGPSZ + DataManager.Instance.GetUserGpsZ();
+        return data;
     }
+
+    private string ONADS()
+    {
+
+        //Debug.Log("WHAT IS MY USERID SAYING?? "+DataManager.Instance.GetUserId());
+
+        data = Construct.CONNECTIONTYPE + Construct.ONADS
+               + Construct.USERDEVICEID + AndroidManager.Instance.GetAndroidDeviceID()
+               + Construct.USERIPADDRESS + GetIPAddress()
+               + Construct.USERCREDITS + DataManager.Instance.GetUserCredits() 
+               + Construct.USERGPSX + DataManager.Instance.GetUserGpsX()
+               + Construct.USERGPSY + DataManager.Instance.GetUserGpsY()
+               + Construct.USERGPSZ + DataManager.Instance.GetUserGpsZ()
+               + Construct.USERID + DataManager.Instance.GetUserId()
+               + Construct.USERADSMODTYPE + DataManager.Instance.GetUserAdsMod()
+               + Construct.USERSTATE + DataManager.Instance.GetUserState();
+              
+        return data;
+    }
+
+    private string ONLOGIN()
+    {
+
+        data = Construct.CONNECTIONTYPE + Construct.ONLOGIN
+               + Construct.USERDEVICEID + AndroidManager.Instance.GetAndroidDeviceID()
+               + Construct.USERIPADDRESS + GetIPAddress()
+               + Construct.USERCREDITS + DataManager.Instance.GetUserCredits()
+               + Construct.USERGPSX + DataManager.Instance.GetUserGpsX()
+               + Construct.USERGPSY + DataManager.Instance.GetUserGpsY()
+               + Construct.USERGPSZ + DataManager.Instance.GetUserGpsZ()
+               + Construct.USERFIRSTNAME + DataManager.Instance.GetUserFirstName()
+               + Construct.USERID + DataManager.Instance.GetUserId()
+               + Construct.USERACCESSTOKEN + DataManager.Instance.GetUserAccessToken()
+               + Construct.USERPIC + DataManager.Instance.GetUserPic()
+               + Construct.USERNAME + DataManager.Instance.GetUserName()
+               + Construct.USERLASTNAME + DataManager.Instance.GetUserLastName()
+               + Construct.USERSTATE + DataManager.Instance.GetUserState()
+               + Construct.USERACTIVATION + DataManager.Instance.GetUserActivation();
+        return data;
+    }
+
+    private string ONLOGOUT()
+    {
+
+        data = Construct.CONNECTIONTYPE + Construct.ONLOGOUT
+               + Construct.USERID + DataManager.Instance.GetUserId()
+               + Construct.USERSTATE + DataManager.Instance.GetUserState();
+        return data;
+    }
+
+
 
     private void SendData(Socket sender, string data)
     {
-
         byte[] msg = Encoding.ASCII.GetBytes(data);
-
-
         sender.Send(msg);
-
     }
 
+    private int PingServerTime = 0;
     private void Update()
     {
-        ServerSocketConnect();
+        if(PingServerTime < 200)
+        {
+            PingServerTime++;
+        }
+        if(PingServerTime > 199)
+        {
+            SendNewDataType(Construct.ONADS);
+            PingServerTime = 0;
+        }
+        DataManager.Instance.UserinputCredits.text = DataManager.Instance.UserCredits.text;
+        //SendNewDataType(Construct.ONADS);
     }
+
+    
 
     private void Start()
     {
+
+        SendNewDataType(Construct.ONAWAKE);
+        
         //ServerSocketConnect();
+        ////Debug.Log("CONTRUCT DATA: "+Contruct.CONNECTIONTYPE);
     }
 
 

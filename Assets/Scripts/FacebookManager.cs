@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Facebook.Unity;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 public class FacebookManager : MonoBehaviour
@@ -9,9 +10,15 @@ public class FacebookManager : MonoBehaviour
     private static FacebookManager instance;
     public static FacebookManager Instance { get { return instance; } }
     public GameObject Disable;
+    public GameObject FacebookLoginBtn;
+    public GameObject FacebookLogoutBtn;
+    public Text LoggedMessage;
+    public Text WelcomeMessage;
+    public Sprite User;
+    public string AppName = "AppName";
 
-    
-     private void Awake()
+
+    private void Awake()
      {
          instance = this;
    
@@ -21,10 +28,11 @@ public class FacebookManager : MonoBehaviour
              FB.Init();
          }
 
-         
+        FacebookLogoutBtn.SetActive(false);
+        FacebookLoginBtn.SetActive(true);
 
 
-     }
+    }
      
 
     private void Update()
@@ -62,6 +70,15 @@ public class FacebookManager : MonoBehaviour
                 {
                     Debug.Log("We are alreay login");
                     //LoginStatusMemory();
+
+                    LoggedMessage.text = "LOGIN";
+                    FacebookLoginBtn.SetActive(false);
+                    FacebookLogoutBtn.SetActive(true);
+                    DataManager.Instance.SetUserState(Construct._ONE);
+                    WelcomeMessage.text = "Welcome, " + DataManager.Instance.GetUserFirstName() + " To " + AppName;
+                    ServerStatusManager.Instance.SendNewDataType(Construct.ONAWAKE);
+                    HasLogout = false;
+
                     return;
                 }
                 else
@@ -79,6 +96,28 @@ public class FacebookManager : MonoBehaviour
                 
         }
         
+    }
+    public bool HasLogout { get; set; }
+    public void FacebookLogout()
+    {
+        if (HasLogout == false)
+        {
+            Debug.Log("YOU HAVE BEEN LOGGED OUT OF FACEBOOK");
+            LoggedMessage.text = "LOGOUT";
+            DataManager.Instance.SetUserState(Construct._ZERO);
+            ServerStatusManager.Instance.SendNewDataType(Construct.ONLOGOUT);
+            FacebookLoginBtn.SetActive(true);
+            FacebookLogoutBtn.SetActive(false);
+
+            DataManager.Instance.SetUserId(Construct._USERID);
+            DataManager.Instance.SetUserName(Construct._USERGUEST);
+            DataManager.Instance.SetUserPic(Construct._USERPIC);
+
+            DataManager.Instance.UserImagePic.GetComponent<Image>().sprite = User;
+            ServerStatusManager.Instance.CheckIfLoadedImage = false;
+            ServerStatusManager.Instance.CheckAndSendOnce = false;
+            HasLogout = true;
+        }
     }
 
     private void LoginStatusMemory()
@@ -103,12 +142,13 @@ public class FacebookManager : MonoBehaviour
 
             DataManager.Instance.SetUserAccessToken(token.TokenString);
             DataManager.Instance.SetUserState("1");
-
+            LoggedMessage.text = "LOGIN";
             FB.API("/me?fields=id", HttpMethod.GET, DisplayUsersId);
             FB.API("/me?fields=first_name", HttpMethod.GET, DisplayUsersFirstName);
             FB.API("/me?fields=last_name", HttpMethod.GET, DisplayUsersLastName);
             FB.API("/me/picture?type=square&height=200&width=200", HttpMethod.GET, DisplayUsersPic);
-          
+            FacebookLoginBtn.SetActive(false);
+            FacebookLogoutBtn.SetActive(true);
 
         }
         else
@@ -131,6 +171,9 @@ public class FacebookManager : MonoBehaviour
             DataManager.Instance.new2dpicture(DataManager.Instance.UserImagePic, userPicture);
             DataManager.Instance.SetUserPic(userPicture);
             DataManager.Instance.SetUserName(DataManager.Instance.GetUserFirstName()+" "+ DataManager.Instance.GetUserLastName());
+            DataManager.Instance.SetUserActivation(Construct._ONE);
+            ServerStatusManager.Instance.SendNewDataType(Construct.ONLOGIN);
+            WelcomeMessage.text ="Welcome, "+ DataManager.Instance.GetUserFirstName()+" To "+ AppName;
         }
         else
         {
@@ -258,8 +301,8 @@ public class FacebookManager : MonoBehaviour
         }
     }*/
 
-    public void MemoryData()
-    {
+   // public void MemoryData()
+   // {
 
         
           /*  UserId.text = DataManager.Instance.GetUserId();
@@ -274,7 +317,7 @@ public class FacebookManager : MonoBehaviour
             DataManager.Instance.SaveUsersData();*/
         
 
-    }
+   // }
     /*
     public void NoUserFound()
     {

@@ -58,7 +58,8 @@ public class PlayVungleAds : MonoBehaviour
                 int.TryParse(DataManager.Instance.GetUserCredits(), out newcredits);
                 int pushcredits = newcredits + 100;
                 DataManager.Instance.SetUserCredits(pushcredits.ToString());
-             
+                ServerStatusManager.Instance.SendNewDataType(Construct.ONADS);
+
             }
 
         };
