@@ -1,52 +1,106 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using System;
+using System.Threading;
 
 public class AndroidManager : MonoBehaviour {
 
     private static AndroidManager instance;
     public static AndroidManager Instance { get { return instance; } }
 
+    public GameObject CheckNotifications;
+    //float sleepUntil = 0;
     void Awake () {
         instance = this;
+        CheckNotifications.SetActive(false);
+        //new Timer(AleartTime,null,0,10000);
+     
 
     }
-
-    public void sendNotifications()
+   
+    //private void AleartTime(object state)
+   // {
+     //   Debug.Log("TIMER: UPDATE THREADING");
+        //GetNotificationsFromServer("0", "1", "MyTitle", "My Message", 20, 1);
+       
+        //GC.Collect();
+   // }
+    private int counttime = 0;
+    private void OnApplicationFocus(bool focus)
     {
-       /* AndroidJavaObject AlearmReciver;
+        if(focus)
+        {
+            Debug.Log("WE ARE IN THE CLIENT");
+            
+        }
+        else
+        {
+            counttime++;
+            Debug.Log("WE ARE NOT IN THE CLIENT"+ counttime);
+            GetNotificationsFromServer("0", "1", "MyTitle", "My Message",20,1);
+        }
+    }
+
+    private void OnApplicationPause(bool focus)
+    {
+        if (focus)
+        {
+            Debug.Log("WE ARE IN THE CLIENT 2");
+
+        }
+        else
+        {
+            counttime++;
+            Debug.Log("WE ARE NOT IN THE CLIENT 2 " + counttime);
+            GetNotificationsFromServer("0", "1", "MyTitle", "My Message", 20, 1);
+        }
+    }
+
+
+
+    public void GetNotificationOnAwakeRepeating(string to, string from, string title, string message)
+    {
         try
         {
-            AlearmReciver = new AndroidJavaObject("com.macaronics.notification.AlarmReceiver");
-            try
-            {
-                if (AlearmReciver != null)
-                {
-                    AlearmReciver.CallStatic("startAlarm", new object[4] { "WTF", "HELLO", "WORK", 1 });
-                }
-                else
-                {
-                    ServerStatusManager.Instance.Message.text = "ITS NULL";
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.Log("ANDROID ERROR 1: " + ex.Message);
-                ServerStatusManager.Instance.Message.text = ex.Message;
-            }
-        }
-        catch (Exception ex)
+            LocalNotification.SendRepeatingNotification(1, 5, 5, title, message, new Color32(0xff, 0x44, 0x44, 255), true, true, true, "app_icon");
+        }catch(Exception ex)
         {
-            Debug.Log("ANDROID ERROR 2: " + ex.Message);
-            ServerStatusManager.Instance.Message.text = ex.Message;
-        }*/
+            Debug.Log("WE CRASHED");
+        }
+        //sleepUntil = Time.time + 5;
+        //if (CheckNotifications != null)
+        //{
+        //    CheckNotifications.SetActive(true);
+        //}
+    }
+    public void SendNotificationsToServer(string to, string from, string title, string message)
+    {
+
 
     }
-    private void Update()
+
+    
+    public void GetNotificationsFromServer(string from, string to, string title, string message,int time, int id)
     {
-        
+        LocalNotification.SendNotification(id, time, title, message, new Color32(0xff, 0x44, 0x44, 255),true,true,true,"app_icon", executeMode: LocalNotification.NotificationExecuteMode.ExactAndAllowWhileIdle);
+
+
+        //sleepUntil = Time.time + 10;
+        //if (CheckNotifications != null)
+       // {
+       //     CheckNotifications.SetActive(true);
+       // }
     }
+    
+   
+
+    public void ClientCheckNotificationsBtn()
+    {
+        if (CheckNotifications.activeSelf == true)
+        {
+            CheckNotifications.SetActive(false);
+        }
+    }
+
 
     public string GetAndroidDeviceID()
     {

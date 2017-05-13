@@ -183,11 +183,17 @@ public class DataManager : MonoBehaviour {
 
     public void SetUserActivation(string set)
     {
+
+        PlayerPrefs.SetString("UserActivation", set);
         UserActivation.text = set;
     }
 
     public string GetUserActivation()
     {
+        if (PlayerPrefs.GetString("UserActivation") != "")
+        {
+            UserActivation.text = PlayerPrefs.GetString("UserActivation");
+        }
         return UserActivation.text;
     }
 
@@ -203,83 +209,111 @@ public class DataManager : MonoBehaviour {
     }
     public void SetUserId(string set)
     {
-        //PlayerPrefs.SetString("UserId", set);
+        PlayerPrefs.SetString("UserId", set);
         UserId.text = set;
     }
 
     public string GetUserId()
     {
-        //UserId.text = PlayerPrefs.GetString("UserId");
+        if (PlayerPrefs.GetString("UserId") != "")
+        {
+           // Debug.Log("WE ARE GETTING THE USERS ID FROM SAVED GAME PREFS");
+            UserId.text = PlayerPrefs.GetString("UserId");
+        }
         return UserId.text;
     }
 
     public void SetUserAdsMod(string set)
     {
-        //PlayerPrefs.SetString("UserId", set);
+        
         UserAdsMod.text = set;
     }
 
     public string GetUserAdsMod()
     {
-        //UserId.text = PlayerPrefs.GetString("UserId");
+      
         return UserAdsMod.text;
     }
     
 
     public void SetUserName(string set)
     {
-       
+        PlayerPrefs.SetString("UserName", set);
         UserName.text = set;
     }
 
     public string GetUserName()
     {
+        if (PlayerPrefs.GetString("UserName") != "" && FacebookManager.Instance.HasLogout == false)
+        {
+            //Debug.Log("WE ARE GETTING THE USERS NAME FROM SAVED GAME PREFS");
+            UserName.text = PlayerPrefs.GetString("UserName");
+        }
         return UserName.text;
     }
 
 
     public void SetUserPic(string set)
     {
-        
+        PlayerPrefs.SetString("UserPic", set);
         UserPic.text = set;
     }
 
     public string GetUserPic()
     {
+        if (PlayerPrefs.GetString("UserPic") != "")
+        {
+           // Debug.Log("WE ARE GETTING THE USERS PIC FROM SAVED GAME PREFS");
+            UserPic.text = PlayerPrefs.GetString("UserPic");
+        }
         return UserPic.text;
     }
 
     public void SetUserFirstName(string set)
     {
-       
+        PlayerPrefs.SetString("UserFirstName", set);
         UserFirstName.text = set;
     }
 
     public string GetUserFirstName()
     {
+        if (PlayerPrefs.GetString("UserFirstName") != "")
+        {
+            //Debug.Log("WE ARE GETTING THE USERS FIRST NAME FROM SAVED GAME PREFS");
+            UserFirstName.text = PlayerPrefs.GetString("UserFirstName");
+        }
         return UserFirstName.text;
     }
 
     public void SetUserLastName(string set)
     {
-        
+        PlayerPrefs.SetString("UserLastName", set);
         UserLastName.text = set;
     }
 
     public string GetUserLastName()
     {
+        if (PlayerPrefs.GetString("UserLastName") != "")
+        {
+            //Debug.Log("WE ARE GETTING THE USERS LAST NAME FROM SAVED GAME PREFS");
+            UserLastName.text = PlayerPrefs.GetString("UserLastName");
+        }
         return UserLastName.text;
     }
 
     public void SetUserAccessToken(string set)
     {
-       // PlayerPrefs.SetString("UserAccessToken", set);
+        PlayerPrefs.SetString("UserAccessToken", set);
         UserAccessToken.text = set;
     }
 
     public string GetUserAccessToken()
     {
-        //UserAccessToken.text = PlayerPrefs.GetString("UserAccessToken");
+        if (PlayerPrefs.GetString("UserAccessToken") != "")
+        {
+           // Debug.Log("WE ARE GETTING THE USERS ACCESS TOKEN FROM SAVED GAME PREFS");
+            UserAccessToken.text = PlayerPrefs.GetString("UserAccessToken");
+        }
         return UserAccessToken.text;
     }
 

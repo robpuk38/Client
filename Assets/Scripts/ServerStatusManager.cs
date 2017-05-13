@@ -28,6 +28,7 @@ public class ServerStatusManager : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        //PlayerPrefs.DeleteAll();
     }
 
 
@@ -101,7 +102,7 @@ public class ServerStatusManager : MonoBehaviour
         }
     }
 
-
+   
    public bool CheckIfLoadedImage { get; set; }
     public bool CheckAndSendOnce { get; set; }
 
@@ -110,6 +111,40 @@ public class ServerStatusManager : MonoBehaviour
         string[] aData = data.Split('|');
         for (int i = 0; i < aData.Length - 1; i++)
         {
+
+            if (aData[i] == Construct._USERSTATE)
+            {
+
+                //Debug.Log(Construct._USERSTATE + " " + aData[i + 1]);
+
+                if (aData[i + 1] == Construct._ZERO)
+                {
+
+
+                    Debug.Log(Construct._USERSTATE + " OUR USER STATE IS A BIG NOTHING SO WE ARE NOT LOGIN " + aData[i + 1]);
+                    FacebookManager.Instance.LoggedMessage.text = "LOGOUT";
+                    DataManager.Instance.SetUserState(Construct._ZERO);
+                    //ServerStatusManager.Instance.SendNewDataType(Construct.ONLOGOUT);
+                    FacebookManager.Instance.FacebookLoginBtn.SetActive(true);
+                    FacebookManager.Instance.FacebookLogoutBtn.SetActive(false);
+                    DataManager.Instance.UserName.text = Construct._USERGUEST;
+                    // DataManager.Instance.SetUserId(Construct._USERID);
+                    // DataManager.Instance.SetUserName(Construct._USERGUEST);
+                    // DataManager.Instance.SetUserPic(Construct._USERPIC);
+
+                    DataManager.Instance.UserImagePic.GetComponent<Image>().sprite = FacebookManager.Instance.User;
+                    CheckIfLoadedImage = false;
+                    CheckAndSendOnce = false;
+                    FacebookManager.Instance.HasLogout = true;
+                    Debug.Log("ARE WE ARE LOGOUT " + FacebookManager.Instance.HasLogout);
+
+                }
+                else
+                {
+
+                    DataManager.Instance.SetUserState(aData[i + 1]);
+                }
+            }
 
             if (aData[i] == Construct._ID)
             {
@@ -262,39 +297,33 @@ public class ServerStatusManager : MonoBehaviour
                 DataManager.Instance.SetUserMana(aData[i + 1]);
             }
 
-            if (aData[i] == Construct._USERNAME)
-            {
-
-                //Debug.Log(Construct._USERNAME + " " + aData[i + 1]);
-                DataManager.Instance.SetUserName(aData[i + 1]);
-            }
+           
 
             if (aData[i] == Construct._USERPIC)
             {
 
                 //Debug.Log(Construct._USERPIC + " " + aData[i + 1]);
                 DataManager.Instance.SetUserPic(aData[i + 1]);
-                if (CheckIfLoadedImage == false && aData[i + 1] != Construct._USERPIC)
+                if (CheckIfLoadedImage == false && aData[i + 1] != Construct._USERPIC && FacebookManager.Instance.HasLogout == false)
                 {
                     CheckIfLoadedImage = true;
                     DataManager.Instance.new2dpicture(DataManager.Instance.UserImagePic, DataManager.Instance.GetUserPic());
                 }
             }
 
-            if (aData[i] == Construct._USERSTATE)
+            
+
+            if (aData[i] == Construct._USERNAME)
             {
 
-                //Debug.Log(Construct._USERSTATE + " " + aData[i + 1]);
+                //Debug.Log(Construct._USERNAME + " " + aData[i + 1]);
 
-                if (aData[i + 1] == Construct._ZERO)
+                if (FacebookManager.Instance.HasLogout == false )
                 {
-                    Debug.Log(Construct._USERSTATE + " OUR USER STATE IS A BIG NOTHING SO WE ARE NOT LOGIN " + aData[i + 1]);
-                    //FacebookManager.Instance.FacebookLogout();
+                    Debug.Log(" WE ARE LOGIN SO STAY LOGGIN  ");
+                    DataManager.Instance.SetUserName(aData[i + 1]);
                 }
-                else
-                {
-                    DataManager.Instance.SetUserState(aData[i + 1]);
-                }
+              
             }
 
             if (aData[i] == Construct._USERXPOS)
@@ -349,15 +378,15 @@ public class ServerStatusManager : MonoBehaviour
         }
         //lets check if this client has all the data set to know if they are fully login or not
 
-        Debug.Log("USERID: "+ DataManager.Instance.GetUserId());
-        Debug.Log("USERNAME: " + DataManager.Instance.GetUserName());
-        Debug.Log("USERPIC: " + DataManager.Instance.GetUserPic());
-        Debug.Log("USERSTATE: " + DataManager.Instance.GetUserState());
+       // Debug.Log("USERID: "+ DataManager.Instance.GetUserId());
+       // Debug.Log("USERNAME: " + DataManager.Instance.GetUserName());
+       // Debug.Log("USERPIC: " + DataManager.Instance.GetUserPic());
+       // Debug.Log("USERSTATE: " + DataManager.Instance.GetUserState());
         if (DataManager.Instance.GetUserId() != Construct._USERID 
             && DataManager.Instance.GetUserName() != Construct._USERNAME
             && DataManager.Instance.GetUserPic() != Construct._USERPIC
              && DataManager.Instance.GetUserState() != Construct._ZERO
-             && CheckAndSendOnce == false)
+             && CheckAndSendOnce == false && FacebookManager.Instance.HasLogout == false)
         {
 
             Debug.Log("DID WE MAKE IT IN : ");
@@ -416,7 +445,7 @@ public class ServerStatusManager : MonoBehaviour
 
     private string ONAWAKE()
     {
-
+       
         data = Construct.CONNECTIONTYPE + Construct.ONAWAKE
                + Construct.USERDEVICEID + AndroidManager.Instance.GetAndroidDeviceID()
                + Construct.USERIPADDRESS + GetIPAddress()

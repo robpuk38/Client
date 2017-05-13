@@ -139,7 +139,9 @@
     <Compile Include="Assets\Scripts\FacebookManager.cs" />
     <Compile Include="Assets\Scripts\GPSManager.cs" />
     <Compile Include="Assets\Scripts\InappManager.cs" />
+    <Compile Include="Assets\Scripts\LocalNotification.cs" />
     <Compile Include="Assets\Scripts\MainCamera.cs" />
+    <Compile Include="Assets\Scripts\NotificationTest.cs" />
     <Compile Include="Assets\Scripts\PlayAdcolonyAds.cs" />
     <Compile Include="Assets\Scripts\PlayVungleAds.cs" />
     <Compile Include="Assets\Scripts\PopUpContationManager.cs" />

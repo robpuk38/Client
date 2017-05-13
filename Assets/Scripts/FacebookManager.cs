@@ -76,7 +76,7 @@ public class FacebookManager : MonoBehaviour
                     FacebookLogoutBtn.SetActive(true);
                     DataManager.Instance.SetUserState(Construct._ONE);
                     WelcomeMessage.text = "Welcome, " + DataManager.Instance.GetUserFirstName() + " To " + AppName;
-                    ServerStatusManager.Instance.SendNewDataType(Construct.ONAWAKE);
+                    ServerStatusManager.Instance.SendNewDataType(Construct.ONLOGIN);
                     HasLogout = false;
 
                     return;
@@ -108,15 +108,16 @@ public class FacebookManager : MonoBehaviour
             ServerStatusManager.Instance.SendNewDataType(Construct.ONLOGOUT);
             FacebookLoginBtn.SetActive(true);
             FacebookLogoutBtn.SetActive(false);
-
-            DataManager.Instance.SetUserId(Construct._USERID);
-            DataManager.Instance.SetUserName(Construct._USERGUEST);
-            DataManager.Instance.SetUserPic(Construct._USERPIC);
+            DataManager.Instance.UserName.text = Construct._USERGUEST;
+            // DataManager.Instance.SetUserId(Construct._USERID);
+            // DataManager.Instance.SetUserName(Construct._USERGUEST);
+            // DataManager.Instance.SetUserPic(Construct._USERPIC);
 
             DataManager.Instance.UserImagePic.GetComponent<Image>().sprite = User;
             ServerStatusManager.Instance.CheckIfLoadedImage = false;
             ServerStatusManager.Instance.CheckAndSendOnce = false;
             HasLogout = true;
+            
         }
     }
 

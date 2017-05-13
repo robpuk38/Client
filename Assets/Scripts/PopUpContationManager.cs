@@ -29,7 +29,7 @@ public class PopUpContationManager : MonoBehaviour {
             PopUpContainor("","");
         }
 
-        if (EventSystem.current.currentSelectedGameObject.GetComponent<Button>().name == "FacebookBtn")
+        if (EventSystem.current.currentSelectedGameObject.GetComponent<Button>().name == "FacebookLoginBtn")
         {
             PopUpContainor("FAcebook Join", "Before You Can Join Our Service It Is Required To Have At Least 200 Or More Credits  Or A Paid Account." +
                 " We Have Provided Each User With The Option To Either Join Via Paid With Google In-App Payments Or With Viewing And Downloading At Least One App, " +
