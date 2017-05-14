@@ -14,7 +14,7 @@ class LocalNotification
     }
 
 
-    private static string fullClassName = "net.agasper.unitynotification.UnityNotificationManager";
+    private static string fullClassName = "com.pctrs.unitynotification.UnityNotificationManager";
     private static string mainActivityClassName = "com.unity3d.player.UnityPlayerNativeActivity";
 
 
@@ -38,7 +38,7 @@ class LocalNotification
         }
         catch(Exception ex)
         {
-            Debug.Log("Error "+ ex.Message);
+            //Debug.Log("Error "+ ex.Message);
         }
         
 
@@ -59,7 +59,7 @@ class LocalNotification
     }
         catch(Exception ex)
         {
-            Debug.Log("Error "+ ex.Message);
+            //Debug.Log("Error "+ ex.Message);
         }
 
     }
@@ -78,7 +78,7 @@ class LocalNotification
         }
         catch (Exception ex)
         {
-            Debug.Log("Error " + ex.Message);
+            //Debug.Log("Error " + ex.Message);
         }
     }
 

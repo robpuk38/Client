@@ -71,6 +71,8 @@ public class Construct
     public static string _USERGUEST = "GUEST";
     public static string _ZERO = "0";
     public static string _ONE = "1";
+    public static string _TWO = "2";
+    public static string _THREE = "3";
     public static string _NULL = "";
 
 

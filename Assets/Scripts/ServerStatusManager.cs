@@ -117,7 +117,21 @@ public class ServerStatusManager : MonoBehaviour
 
                 //Debug.Log(Construct._USERSTATE + " " + aData[i + 1]);
 
-                if (aData[i + 1] == Construct._ZERO)
+                if (aData[i + 1] == Construct._TWO && FacebookManager.Instance.FacebookLogoutBtn.activeSelf == true && DataManager.Instance.GetUserState() == Construct._TWO)
+                {
+                    // THE CLIENT IS LOGIN WE RETURNED A 1 SO LETS SEND BACK A 2
+                    Debug.Log("ARE WE LOGGIN SUCCESSFLULLY CHANGE STATE TO 2:= " + aData[i + 1]);
+                    DataManager.Instance.SetUserState(Construct._THREE);
+                }
+
+                if (aData[i + 1] == Construct._ONE && FacebookManager.Instance.FacebookLogoutBtn.activeSelf == true && DataManager.Instance.GetUserState() == Construct._ONE)
+                {
+                    // THE CLIENT IS LOGIN WE RETURNED A 1 SO LETS SEND BACK A 2
+                    Debug.Log("ARE WE LOGGIN SUCCESSFLULLY CHANGE STATE TO 1:= " + aData[i + 1]);
+                    DataManager.Instance.SetUserState(Construct._TWO);
+                }
+
+                if (aData[i + 1] == Construct._ZERO && FacebookManager.Instance.FacebookLogoutBtn.activeSelf == true)
                 {
 
 
@@ -139,11 +153,7 @@ public class ServerStatusManager : MonoBehaviour
                     Debug.Log("ARE WE ARE LOGOUT " + FacebookManager.Instance.HasLogout);
 
                 }
-                else
-                {
-
-                    DataManager.Instance.SetUserState(aData[i + 1]);
-                }
+                
             }
 
             if (aData[i] == Construct._ID)
@@ -320,7 +330,7 @@ public class ServerStatusManager : MonoBehaviour
 
                 if (FacebookManager.Instance.HasLogout == false )
                 {
-                    Debug.Log(" WE ARE LOGIN SO STAY LOGGIN  ");
+                    //Debug.Log(" WE ARE LOGIN SO STAY LOGGIN  ");
                     DataManager.Instance.SetUserName(aData[i + 1]);
                 }
               
@@ -381,7 +391,7 @@ public class ServerStatusManager : MonoBehaviour
        // Debug.Log("USERID: "+ DataManager.Instance.GetUserId());
        // Debug.Log("USERNAME: " + DataManager.Instance.GetUserName());
        // Debug.Log("USERPIC: " + DataManager.Instance.GetUserPic());
-       // Debug.Log("USERSTATE: " + DataManager.Instance.GetUserState());
+        Debug.Log("USERSTATE: " + DataManager.Instance.GetUserState());
         if (DataManager.Instance.GetUserId() != Construct._USERID 
             && DataManager.Instance.GetUserName() != Construct._USERNAME
             && DataManager.Instance.GetUserPic() != Construct._USERPIC
@@ -389,12 +399,16 @@ public class ServerStatusManager : MonoBehaviour
              && CheckAndSendOnce == false && FacebookManager.Instance.HasLogout == false)
         {
 
-            Debug.Log("DID WE MAKE IT IN : ");
+          //  Debug.Log("DID WE MAKE IT IN : ");
             CheckAndSendOnce = true;
             FacebookManager.Instance.LoggedMessage.text = "LOGIN";
             FacebookManager.Instance.FacebookLoginBtn.SetActive(false);
             FacebookManager.Instance.FacebookLogoutBtn.SetActive(true);
-            DataManager.Instance.SetUserState(Construct._ONE);
+            //here it is 
+            if (DataManager.Instance.GetUserState() == Construct._USERSTATE)
+            {
+                DataManager.Instance.SetUserState(Construct._ONE);
+            }
             FacebookManager.Instance.WelcomeMessage.text = "Welcome, " + DataManager.Instance.GetUserFirstName() + " To " + FacebookManager.Instance.AppName;
             SendNewDataType(Construct.ONLOGIN);
             FacebookManager.Instance.HasLogout = false;

@@ -46,11 +46,11 @@ namespace AdColony {
         public static void Configure(string appId, AppOptions options, params string[] zoneIds) {
             // Using SharedInstance to make sure the MonoBehaviour is instantiated
             if (SharedInstance._instance == null) {
-                Debug.LogWarning(Constants.AdsMessageSDKUnavailable);
+               // Debug.LogWarning(Constants.AdsMessageSDKUnavailable);
                 return;
             }
 
-            Debug.Log("ADS AdColony Configure() " + appId);
+           // Debug.Log("ADS AdColony Configure() " + appId);
 
             SharedInstance._instance.Configure(appId, options, zoneIds);
             _initialized = true;

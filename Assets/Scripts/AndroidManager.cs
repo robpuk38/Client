@@ -29,13 +29,13 @@ public class AndroidManager : MonoBehaviour {
     {
         if(focus)
         {
-            Debug.Log("WE ARE IN THE CLIENT");
+            //Debug.Log("WE ARE IN THE CLIENT");
             
         }
         else
         {
             counttime++;
-            Debug.Log("WE ARE NOT IN THE CLIENT"+ counttime);
+           // Debug.Log("WE ARE NOT IN THE CLIENT"+ counttime);
             GetNotificationsFromServer("0", "1", "MyTitle", "My Message",20,1);
         }
     }
@@ -44,14 +44,15 @@ public class AndroidManager : MonoBehaviour {
     {
         if (focus)
         {
-            Debug.Log("WE ARE IN THE CLIENT 2");
+            //Debug.Log("WE ARE IN THE CLIENT 2");
+            counttime++;
+            //Debug.Log("WE ARE NOT IN THE CLIENT 2 " + counttime);
+            GetNotificationsFromServer("0", "1", "MyTitle 2", "My Message 2", 60000, 2);
 
         }
         else
         {
-            counttime++;
-            Debug.Log("WE ARE NOT IN THE CLIENT 2 " + counttime);
-            GetNotificationsFromServer("0", "1", "MyTitle", "My Message", 20, 1);
+            
         }
     }
 
@@ -64,7 +65,7 @@ public class AndroidManager : MonoBehaviour {
             LocalNotification.SendRepeatingNotification(1, 5, 5, title, message, new Color32(0xff, 0x44, 0x44, 255), true, true, true, "app_icon");
         }catch(Exception ex)
         {
-            Debug.Log("WE CRASHED");
+            //Debug.Log("WE CRASHED");
         }
         //sleepUntil = Time.time + 5;
         //if (CheckNotifications != null)
@@ -133,38 +134,38 @@ public class AndroidManager : MonoBehaviour {
                             }
                             catch (Exception ex)
                             {
-                                Debug.Log("ANDROID ERROR 3: " + ex.Message);
+                                //Debug.Log("ANDROID ERROR 3: " + ex.Message);
                                 ServerStatusManager.Instance.Message.text = ex.Message;
                             }
                         }
                         catch (Exception ex)
                         {
-                            Debug.Log("ANDROID ERROR 4: " + ex.Message);
+                            //Debug.Log("ANDROID ERROR 4: " + ex.Message);
                             ServerStatusManager.Instance.Message.text = ex.Message;
                         }
                     }
                     catch (Exception ex)
                     {
-                        Debug.Log("ANDROID ERROR 5: " + ex.Message);
+                        //Debug.Log("ANDROID ERROR 5: " + ex.Message);
                         ServerStatusManager.Instance.Message.text = ex.Message;
                     }
                 }
                 catch (Exception ex)
                 {
-                    Debug.Log("ANDROID ERROR 6: " + ex.Message);
+                   // Debug.Log("ANDROID ERROR 6: " + ex.Message);
                     ServerStatusManager.Instance.Message.text = ex.Message;
                 }
 
             }
             catch (Exception ex)
             {
-                Debug.Log("ANDROID ERROR 7: " + ex.Message);
+                //Debug.Log("ANDROID ERROR 7: " + ex.Message);
                 ServerStatusManager.Instance.Message.text = ex.Message;
             }
         }
         catch (Exception ex)
         {
-            Debug.Log("ANDROID ERROR 8: " + ex.Message);
+            //Debug.Log("ANDROID ERROR 8: " + ex.Message);
             ServerStatusManager.Instance.Message.text = ex.Message;
         }
         DataManager.Instance.SetUserDeviceId(android_id);

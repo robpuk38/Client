@@ -49,14 +49,14 @@ public class DataManager : MonoBehaviour {
 
     public void ValueChangeCheck()
     {
-        Debug.Log("Value Changed");
+       // Debug.Log("Value Changed");
         instance.SetUserAdsMod(Construct._ONE);
     }
 
     private IEnumerator getuserspic;
     IEnumerator loadUsersPic(GameObject go, string url)
     {
-        Debug.Log("CALLLED MORE THEN IT SHOULD BE FOR SOME REASON ");
+       // Debug.Log("CALLLED MORE THEN IT SHOULD BE FOR SOME REASON ");
 
         if (url.ToString() != null && url.ToString() != "" && url.ToString() != "USERPIC")
         {

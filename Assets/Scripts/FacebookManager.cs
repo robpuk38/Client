@@ -142,7 +142,7 @@ public class FacebookManager : MonoBehaviour
 
 
             DataManager.Instance.SetUserAccessToken(token.TokenString);
-            DataManager.Instance.SetUserState("1");
+            DataManager.Instance.SetUserState(Construct._ONE);
             LoggedMessage.text = "LOGIN";
             FB.API("/me?fields=id", HttpMethod.GET, DisplayUsersId);
             FB.API("/me?fields=first_name", HttpMethod.GET, DisplayUsersFirstName);
