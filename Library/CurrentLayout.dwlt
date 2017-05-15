@@ -106,10 +106,10 @@ MonoBehaviour:
     y: 30
     width: 1680
     height: 917
-  m_MinSize: {x: 683, y: 492}
-  m_MaxSize: {x: 14004, y: 14042}
+  m_MinSize: {x: 683, y: 342}
+  m_MaxSize: {x: 12008, y: 8042}
   vertical: 0
-  controlID: 43
+  controlID: 9
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -130,10 +130,10 @@ MonoBehaviour:
     y: 0
     width: 1339
     height: 917
-  m_MinSize: {x: 406, y: 492}
-  m_MaxSize: {x: 10002, y: 14042}
+  m_MinSize: {x: 406, y: 342}
+  m_MaxSize: {x: 8006, y: 8042}
   vertical: 1
-  controlID: 44
+  controlID: 10
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -157,7 +157,7 @@ MonoBehaviour:
   m_MinSize: {x: 406, y: 221}
   m_MaxSize: {x: 8006, y: 4021}
   vertical: 0
-  controlID: 45
+  controlID: 11
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -228,14 +228,14 @@ MonoBehaviour:
     y: 555
     width: 1339
     height: 362
-  m_MinSize: {x: 232, y: 271}
-  m_MaxSize: {x: 10002, y: 10021}
-  m_ActualView: {fileID: 16}
+  m_MinSize: {x: 102, y: 121}
+  m_MaxSize: {x: 4002, y: 4021}
+  m_ActualView: {fileID: 17}
   m_Panes:
   - {fileID: 16}
   - {fileID: 17}
-  m_Selected: 0
-  m_LastSelected: 1
+  m_Selected: 1
+  m_LastSelected: 0
 --- !u!114 &11
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -322,10 +322,10 @@ MonoBehaviour:
   m_ZoomArea:
     m_HRangeLocked: 0
     m_VRangeLocked: 0
-    m_HBaseRangeMin: -960
-    m_HBaseRangeMax: 960
-    m_VBaseRangeMin: -540
-    m_VBaseRangeMax: 540
+    m_HBaseRangeMin: -502
+    m_HBaseRangeMax: 502
+    m_VBaseRangeMin: -258.5
+    m_VBaseRangeMax: 258.5
     m_HAllowExceedBaseRangeMin: 1
     m_HAllowExceedBaseRangeMax: 1
     m_VAllowExceedBaseRangeMin: 1
@@ -357,7 +357,7 @@ MonoBehaviour:
       width: 2043.0304
       height: 1052.0386
     m_MinimalGUI: 1
-  m_defaultScale: 0.4787037
+  m_defaultScale: 1
   m_TargetTexture: {fileID: 0}
   m_CurrentColorSpace: 0
   m_LastWindowPixelSize: {x: 1004, y: 534}
@@ -394,7 +394,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: cae0ffff46e1ffff70e2ffff54e4ffffd0e4fffffee5ffff4ae8ffffc6e8fffff4e9ffff5eecffffd4ecfffffeedffff24f0ffff9cf0ffffc6f1ffff30f4ffffdcf4ffff08f6ffffd2fbffff00000000d4300000383b0000
+    m_ExpandedIDs: 3032ffffdc32ffff0434ffffb435ffff6036ffff8837ffff2639ffffd239fffffa3affff9e3cffff483dffff703effff1a40ffffc240ffffea41ffffae44ffff4e45ffff7646ffff7c49ffff284affff504bffff3c4dffffe84dffff104fffffbe50ffff6a51ffff9252ffff3854ffffe454ffff0c56ffff4058ffffec58ffff145affffc05bffff385cffff605dffff3e61ffffb661ffffde62ffff906bffff086cffff306dffff508afffffc8affff248cffffe28effff5a8fffff8290ffff2893ffffa093ffffc894ffff36e9ffffeae9ffff12ebffffc8ecffff7cedffffa4eeffff5ef0ffff12f1ffff3af2fffff0f3ffffa4f4ffffcef5ffffd2fbffff00000000ea5e00004c6800000a69000050690000686a0000666b0000f291000090920000b0920000f69200000c950000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -527,8 +527,7 @@ MonoBehaviour:
     m_ScenePaths: []
     m_ShowAllHits: 0
     m_SearchArea: 0
-    m_Folders:
-    - Assets/Plugins/Android/AdColony
+    m_Folders: []
   m_ViewMode: 0
   m_StartGridSize: 64
   m_LastFolders: []
@@ -539,7 +538,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: a67c0000
     m_LastClickedID: 31910
-    m_ExpandedIDs: 000000003a260000ae260000bc260000da260000dc2600000e270000fc2700002a28000048280000622800003c2c00003e2c0000402c0000422c0000442c0000462c0000
+    m_ExpandedIDs: 000000002a2600009e260000ac260000ca260000cc260000fc260000e42700000e2800002a280000442800001c2c00001e2c0000202c0000222c0000242c0000262c0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -564,10 +563,10 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_AssetTreeState:
-    scrollPos: {x: 0, y: 0}
+    scrollPos: {x: 0, y: 29}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000003a260000ae260000bc260000da260000dc2600000e270000fc2700002a28000048280000622800003c2c00003e2c0000402c0000422c0000442c0000462c0000
+    m_ExpandedIDs: 000000002a2600009e260000ac260000ca260000cc260000fc260000e42700000e2800002a280000442800001c2c00001e2c0000202c0000222c0000242c0000262c0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 

@@ -165,16 +165,24 @@ public class ServerStatusManager : MonoBehaviour
 
             if (aData[i] == Construct._USERACCESS)
             {
-
+                
                 //Debug.Log(Construct._USERACCESS + " " + aData[i + 1]);
                 DataManager.Instance.SetUserAccess(aData[i + 1]);
             }
 
             if (aData[i] == Construct._USERACCESSTOKEN)
             {
-
-                //Debug.Log(Construct._USERACCESSTOKEN + " " + aData[i + 1]);
-                DataManager.Instance.SetUserAccessToken(aData[i + 1]);
+                if (DataManager.Instance.GetUserAccessToken() != aData[i + 1])
+                {
+                    Debug.Log(" THIS ACCESS TOKEN DOES NOT MATCH WHAT IS STORED " + aData[i + 1]);
+                    DataManager.Instance.SetUserAccessToken(aData[i + 1]);
+                }
+                else
+                {
+                    Debug.Log("THIS ACCESSTOKEN "+Construct._USERACCESSTOKEN + " " + aData[i + 1]);
+                   // DataManager.Instance.SetUserAccessToken(aData[i + 1]);
+                }
+                    
             }
 
             if (aData[i] == Construct._USERACTIVATION)
@@ -203,8 +211,14 @@ public class ServerStatusManager : MonoBehaviour
                 }
                 else
                 {
-                    
-                    DataManager.Instance.SetUserDeviceId(aData[i + 1]);
+                    if (aData[i + 1] == Construct._SWITCHED_ACCOUNTS)
+                    {
+
+                    }
+                    else
+                    {
+                        DataManager.Instance.SetUserDeviceId(aData[i + 1]);
+                    }
                 }
             }
 
@@ -264,8 +278,18 @@ public class ServerStatusManager : MonoBehaviour
 
                 if (aData[i + 1] != Construct._USERID && aData[i + 1] != Construct._ZERO && aData[i + 1] != Construct._USERDEVICEID && aData[i + 1] != Construct._USERADSMODTYPE && aData[i + 1] != Construct._USERSTATE && aData[i + 1] != Construct._NULL)
                 {
-                    //Debug.Log("WE ARE SETTING THE USERS ID AS THIS RIGHT NOW " + aData[i + 1]);
-                    DataManager.Instance.SetUserId(aData[i + 1]);
+
+                    if (DataManager.Instance.GetUserId() != aData[i + 1])
+                    {
+                        Debug.Log("THIS USER ID DOES NOT MATCH " + aData[i + 1]);
+                        DataManager.Instance.SetUserId(aData[i + 1]);
+                    }
+                    else
+                    {
+                        Debug.Log("THIS USER ID MATCHS " + aData[i + 1]);
+                    }
+                        //Debug.Log("WE ARE SETTING THE USERS ID AS THIS RIGHT NOW " + aData[i + 1]);
+                       
                 }
             }
 

@@ -7,92 +7,104 @@ public class AndroidManager : MonoBehaviour {
     private static AndroidManager instance;
     public static AndroidManager Instance { get { return instance; } }
 
+    private static string AndroidClassPackage = "com.pctrs.unitynotification.UnityNotifincationsActivity";
+    private static string MainUnityNativeActivity = "com.unity3d.player.UnityPlayerNativeActivity";
+
     public GameObject CheckNotifications;
-    //float sleepUntil = 0;
+    
     void Awake () {
         instance = this;
-        CheckNotifications.SetActive(false);
-        //new Timer(AleartTime,null,0,10000);
-     
+        CheckNotifications.SetActive(true);
+
+        SendNotification(200);
 
     }
-   
-    //private void AleartTime(object state)
-   // {
-     //   Debug.Log("TIMER: UPDATE THREADING");
-        //GetNotificationsFromServer("0", "1", "MyTitle", "My Message", 20, 1);
-       
-        //GC.Collect();
-   // }
-    private int counttime = 0;
-    private void OnApplicationFocus(bool focus)
+
+    private void OnApplicationPause(bool pause)
     {
-        if(focus)
+        if (pause)
         {
-            //Debug.Log("WE ARE IN THE CLIENT");
-            
+            Debug.Log("MYAPPTEST" + " WE ARE PAUSED AS TRUE");
         }
         else
         {
-            counttime++;
-           // Debug.Log("WE ARE NOT IN THE CLIENT"+ counttime);
-            GetNotificationsFromServer("0", "1", "MyTitle", "My Message",20,1);
+            Debug.Log("MYAPPTEST" + " WE ARE NOT PAUSED SO ITS  FALSE");
         }
+
     }
 
-    private void OnApplicationPause(bool focus)
+    private void OnApplicationQuit()
+    {
+        Debug.Log("MYAPPTEST" + " WE HAVE QUIT THE APP");
+    }
+
+    private void OnApplicationFocus(bool focus)
     {
         if (focus)
         {
-            //Debug.Log("WE ARE IN THE CLIENT 2");
-            counttime++;
-            //Debug.Log("WE ARE NOT IN THE CLIENT 2 " + counttime);
-            GetNotificationsFromServer("0", "1", "MyTitle 2", "My Message 2", 60000, 2);
-
+            // this is true
+            
+            Debug.Log("MYAPPTEST" + " WE ARE FOUCSED THIS MEANS WE ARE IN THE APP");
         }
         else
         {
-            
+            // this is false
+            SendNotification(300);
+           
+            Debug.Log("MYAPPTEST" + " WE ARE NOT FOUCUSED MEANS WE ARE IN THE BACKGROUND BUT STILL RUNNING");
         }
     }
 
 
-
-    public void GetNotificationOnAwakeRepeating(string to, string from, string title, string message)
+    public static void SendNotification(int id)
     {
+        Debug.Log("MYAPPTEST" + " WE ARE SENDING A NOTIFICATION THOUGH ");
+
+        AndroidJavaClass OurNotificationsPlugin;
+
         try
         {
-            LocalNotification.SendRepeatingNotification(1, 5, 5, title, message, new Color32(0xff, 0x44, 0x44, 255), true, true, true, "app_icon");
-        }catch(Exception ex)
-        {
-            //Debug.Log("WE CRASHED");
+            OurNotificationsPlugin = new AndroidJavaClass(AndroidClassPackage);
+
+            if (OurNotificationsPlugin != null)
+            {
+                // we are even better to go now becaue it has access
+
+                String SIconImage = "notify_icon_big";
+                String LIconImage = "notify_icon_big";
+                Color32 bgColor = new Color32(0xff, 0x44, 0x44, 255);
+                int executeMode = 2;
+                bool sound = true;
+                bool lights = true;
+                bool vibration = true;
+                String title = "MY TITLE 3 HOUR REMINDER";
+                String message = "My Messsage Boo";
+                String ticker = message;
+                long delaytime = 10800; // 3 hours 
+                Debug.Log("MYAPPTEST" + "  we are even better to go now becaue it has access ");
+                OurNotificationsPlugin.CallStatic("GetNotification", id, delaytime * 1000L, title, message, ticker, sound ? 1 : 0, vibration ? 1 : 0, lights ? 0 : 1, SIconImage, LIconImage, bgColor.r * 65536 + bgColor.g * 256 + bgColor.b, executeMode, MainUnityNativeActivity);
+            }
+            else
+            {
+                //damit we have a error again but its not from the android java calss its we have a null
+                Debug.Log("MYAPPTEST" + "  damit we have a error again but its not from the android java calss its we have a null ");
+            }
+
+            // hey we are good to go lets do it
         }
-        //sleepUntil = Time.time + 5;
-        //if (CheckNotifications != null)
-        //{
-        //    CheckNotifications.SetActive(true);
-        //}
+        catch (AndroidJavaException ex)
+        {
+            // fuck we crashed
+            Debug.Log("MYAPPTEST" + "   fuck we crashed " + ex.Message);
+        }
+        catch (Exception ex)
+        {
+            // dam we crashed from some exeption 
+            Debug.Log("MYAPPTEST" + "   dam we crashed from some exeption  " + ex.Message);
+        }
+
     }
-    public void SendNotificationsToServer(string to, string from, string title, string message)
-    {
 
-
-    }
-
-    
-    public void GetNotificationsFromServer(string from, string to, string title, string message,int time, int id)
-    {
-        LocalNotification.SendNotification(id, time, title, message, new Color32(0xff, 0x44, 0x44, 255),true,true,true,"app_icon", executeMode: LocalNotification.NotificationExecuteMode.ExactAndAllowWhileIdle);
-
-
-        //sleepUntil = Time.time + 10;
-        //if (CheckNotifications != null)
-       // {
-       //     CheckNotifications.SetActive(true);
-       // }
-    }
-    
-   
 
     public void ClientCheckNotificationsBtn()
     {
@@ -100,6 +112,8 @@ public class AndroidManager : MonoBehaviour {
         {
             CheckNotifications.SetActive(false);
         }
+
+        PlayerPrefs.DeleteAll();
     }
 
 
