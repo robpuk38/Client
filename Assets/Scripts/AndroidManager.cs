@@ -113,19 +113,22 @@ public class AndroidManager : MonoBehaviour {
             CheckNotifications.SetActive(false);
         }
 
-        PlayerPrefs.DeleteAll();
+       
     }
 
 
     public string GetAndroidDeviceID()
     {
 
-        
-       AndroidJavaClass up;
+       
+
+        AndroidJavaClass up;
         AndroidJavaObject currentActivity;
         AndroidJavaObject contentResolver;
         AndroidJavaClass secure;
         string android_id = "No Android";
+
+
         try
         {
             up = new AndroidJavaClass("com.unity3d.player.UnityPlayer");

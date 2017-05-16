@@ -23,10 +23,10 @@ public class FacebookManager : MonoBehaviour
          instance = this;
    
 
-         if (!FB.IsInitialized)
-         {
+         //if (!FB.IsInitialized)
+         //{
              FB.Init();
-         }
+        // }
 
         FacebookLogoutBtn.SetActive(false);
         FacebookLoginBtn.SetActive(true);
@@ -66,10 +66,11 @@ public class FacebookManager : MonoBehaviour
             if (newcredits > 199)
             {
                 Debug.Log("OK YOU HAVE ENOUGH CREDITS TO JOIN");
-               if (FB.IsLoggedIn)
-                {
+                //  if (FB.IsLoggedIn)
+                // {
+               // PlayerPrefs.DeleteAll();
                     Debug.Log("We are alreay login");
-                    //LoginStatusMemory();
+                    LoginStatusMemory();
 
                     LoggedMessage.text = "LOGIN";
                     FacebookLoginBtn.SetActive(false);
@@ -80,12 +81,13 @@ public class FacebookManager : MonoBehaviour
                     HasLogout = false;
 
                     return;
-                }
-                else
-                {
-                    LoginStatusMemory();
-                    return;
-                }
+               // }
+             //   else
+               // {
+                  //  LoginStatusMemory();
+                   // HasLogout = false;
+                   // return;
+               // }
             }
             else
             {
@@ -105,18 +107,22 @@ public class FacebookManager : MonoBehaviour
             Debug.Log("YOU HAVE BEEN LOGGED OUT OF FACEBOOK");
             LoggedMessage.text = "LOGOUT";
             DataManager.Instance.SetUserState(Construct._ZERO);
+            DataManager.Instance.SetUserCredits(Construct._ZERO);
+            DataManager.Instance.SetUserDeviceId(Construct._SWITCHED_ACCOUNTS);
             ServerStatusManager.Instance.SendNewDataType(Construct.ONLOGOUT);
             FacebookLoginBtn.SetActive(true);
             FacebookLogoutBtn.SetActive(false);
             DataManager.Instance.UserName.text = Construct._USERGUEST;
-            // DataManager.Instance.SetUserId(Construct._USERID);
-            // DataManager.Instance.SetUserName(Construct._USERGUEST);
-            // DataManager.Instance.SetUserPic(Construct._USERPIC);
+           
 
             DataManager.Instance.UserImagePic.GetComponent<Image>().sprite = User;
             ServerStatusManager.Instance.CheckIfLoadedImage = false;
             ServerStatusManager.Instance.CheckAndSendOnce = false;
             HasLogout = true;
+            if (FB.IsLoggedIn)
+            {
+                FB.LogOut();
+            }
             
         }
     }
@@ -133,7 +139,7 @@ public class FacebookManager : MonoBehaviour
 
     private void OnLogin(ILoginResult result)
     {
-        if (FB.IsLoggedIn)
+        if (!result.Cancelled)
         {
             Debug.Log("Successful Login");
             //this is a success
@@ -155,7 +161,7 @@ public class FacebookManager : MonoBehaviour
         else
         {
             //we had some error
-
+            LoggedMessage.text = "FAILED LOGIN";
             Debug.Log("Failed Login");
            
         }
@@ -165,22 +171,28 @@ public class FacebookManager : MonoBehaviour
     {
         if (results.Texture != null)
         {
-           
-           
-           
-            string userPicture = "https://graph.facebook.com/" + DataManager.Instance.GetUserId() + "/picture?width=200";
-            DataManager.Instance.new2dpicture(DataManager.Instance.UserImagePic, userPicture);
-            DataManager.Instance.SetUserPic(userPicture);
-            DataManager.Instance.SetUserName(DataManager.Instance.GetUserFirstName()+" "+ DataManager.Instance.GetUserLastName());
-            DataManager.Instance.SetUserActivation(Construct._ONE);
-            ServerStatusManager.Instance.SendNewDataType(Construct.ONLOGIN);
-            WelcomeMessage.text ="Welcome, "+ DataManager.Instance.GetUserFirstName()+" To "+ AppName;
+
+            if (DataManager.Instance.GetUserId() != Construct._USERID && DataManager.Instance.GetUserId() != Construct._USERNAME && DataManager.Instance.GetUserId() != Construct._USERACCESSTOKEN)
+            {
+
+                string userPicture = "https://graph.facebook.com/" + DataManager.Instance.GetUserId() + "/picture?width=200";
+                DataManager.Instance.new2dpicture(DataManager.Instance.UserImagePic, userPicture);
+                DataManager.Instance.SetUserPic(userPicture);
+                DataManager.Instance.SetUserName(DataManager.Instance.GetUserFirstName() + " " + DataManager.Instance.GetUserLastName());
+                DataManager.Instance.SetUserActivation(Construct._ONE);
+                ServerStatusManager.Instance.SendNewDataType(Construct.ONLOGIN);
+                WelcomeMessage.text = "Welcome, " + DataManager.Instance.GetUserFirstName() + " To " + AppName;
+            }
+            else
+            {
+                Debug.Log("THE PICTURE IS NOT WHAT IT SHOULD BE");
+            }
         }
         else
         {
             //we had a picture error
+            Debug.Log("THE PICTURE IS NOT WHAT IT SHOULD BE WE HAVE SOME ERROR FROM FACEBOOK");
 
-         
         }
     }
     private void DisplayUsersFirstName(IResult results)
@@ -235,165 +247,6 @@ public class FacebookManager : MonoBehaviour
         }
     }
 
-    /*
-
-    private void LoginStatusMemory()
-    {
-        if (DataManager.Instance.GetUserId() != null
-        && DataManager.Instance.GetUserId() != ""
-        && DataManager.Instance.GetUserId() != "USERID"
-        && DataManager.Instance.GetUserAccessToken() != null
-        && DataManager.Instance.GetUserAccessToken() != ""
-        && DataManager.Instance.GetUserAccessToken() != "USERACCESSTOKEN"
-       )
-        {
-            // if we have already login before lets never do it again. 
-            Debug.Log("We have already login before");
-            MysqlManager.Instance.GetUsersData(DataManager.Instance.GetUserId(), DataManager.Instance.GetUserAccessToken());
-
-
-
-            return;
-        }
-        else
-        {
-           
-        }
-    }
-
-    int loadingtime = 0;
-    int deloadingtime = 0;
-    private void Update()
-    {
-        if (isloaded == true)
-        {
-            loadingtime++;
-        }
-        if (isloaded == false)
-        {
-            deloadingtime++;
-        }
-        if (loadingtime > 200 && isloaded == true && hasloaded == false)
-        {
-            if (LoadingManager.Instance != null)
-            {
-                LoadingManager.Instance.FadeOut();
-            }
-            FacebookLoginCanvas.SetActive(false);
-            FacebookLogoutCanvas.SetActive(true);
-            VungleCanvas.SetActive(true);
-            AdcolonyCanvas.SetActive(true);
-            hasloaded = true;
-            loadingtime = 0;
-        }
-
-        if (deloadingtime > 200 && isloaded == false && hasloaded == false && hasLogout == true)
-        {
-            if (LoadingManager.Instance != null)
-            {
-                LoadingManager.Instance.FadeOut();
-            }
-            FacebookLoginCanvas.SetActive(true);
-            FacebookLogoutCanvas.SetActive(false);
-            VungleCanvas.SetActive(false);
-            AdcolonyCanvas.SetActive(false);
-            deloadingtime = 0;
-            hasLogout = false;
-        }
-    }*/
-
-   // public void MemoryData()
-   // {
-
-        
-          /*  UserId.text = DataManager.Instance.GetUserId();
-
-            UserName.text = DataManager.Instance.GetUserName();
-            UserCredits.text = DataManager.Instance.GetUserCredits();
-            UserLevel.text = DataManager.Instance.GetUserLevel();
-
-            new2dpicture(UserPics, DataManager.Instance.GetUserPic());
-
-            DataManager.Instance.SetUserState("1");
-            DataManager.Instance.SaveUsersData();*/
-        
-
-   // }
-    /*
-    public void NoUserFound()
-    {
-        if (DataManager.Instance.GetUserPic() != null && DataManager.Instance.GetUserPic() != "" && DataManager.Instance.GetUserPic() != "USERPIC")
-        {
-
-
-            MysqlManager.Instance.PostUsersData(DataManager.Instance.GetUserId(),
-               DataManager.Instance.GetUserPic(),
-               DataManager.Instance.GetUserAccessToken(),
-               DataManager.Instance.GetUserName(),
-               DataManager.Instance.GetUserFirstName(),
-               DataManager.Instance.GetUserLastName(),
-               DataManager.Instance.GetUserState());
-            Debug.Log("No User Was Found Inserting Now");
-            return;
-        }
-        else
-        {
-            Debug.Log("No User Was Found Else Error");
-            return;
-        }
-    }
-
-    IEnumerator loadUsersPic(GameObject go, string url)
-    {
-       
-
-        if (url.ToString() != null && url.ToString() != "" && url.ToString() != "USERPIC")
-        {
-            Texture2D temp = new Texture2D(0, 0);
-            WWW www = new WWW(url);
-            yield return www;
-
-            temp = www.texture;
-            Sprite sprite = Sprite.Create(temp, new Rect(0, 0, temp.width, temp.height), new Vector2(0.5f, 0.5f));
-            Transform themb = go.transform;
-            themb.GetComponent<Image>().sprite = sprite;
-            isloaded = true;
-
-        }
-
-    }
-
-
-    private void new2dpicture(GameObject go, string url)
-    {
-        getuserspic = loadUsersPic(go, url);
-        StartCoroutine(getuserspic);
-    }
-
-
    
-
-    private void GetUsersData(AccessToken token)
-    {
-        
-
-    }
-
-   
-
-    public void FacebookLogout()
-    {
-
-        isloaded = false;
-        hasloaded = false;
-        hasLogout = true;
-        deloadingtime = 0;
-        LoadingManager.Instance.Fadein(false);
-        DataManager.Instance.SetUserState("0");
-        DataManager.Instance.SaveUsersData();
-    }
-
-
-    */
 
 }

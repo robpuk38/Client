@@ -322,10 +322,10 @@ MonoBehaviour:
   m_ZoomArea:
     m_HRangeLocked: 0
     m_VRangeLocked: 0
-    m_HBaseRangeMin: -502
-    m_HBaseRangeMax: 502
-    m_VBaseRangeMin: -258.5
-    m_VBaseRangeMax: 258.5
+    m_HBaseRangeMin: -960
+    m_HBaseRangeMax: 960
+    m_VBaseRangeMin: -540
+    m_VBaseRangeMax: 540
     m_HAllowExceedBaseRangeMin: 1
     m_HAllowExceedBaseRangeMax: 1
     m_VAllowExceedBaseRangeMin: 1
@@ -394,7 +394,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 3032ffffdc32ffff0434ffffb435ffff6036ffff8837ffff2639ffffd239fffffa3affff9e3cffff483dffff703effff1a40ffffc240ffffea41ffffae44ffff4e45ffff7646ffff7c49ffff284affff504bffff3c4dffffe84dffff104fffffbe50ffff6a51ffff9252ffff3854ffffe454ffff0c56ffff4058ffffec58ffff145affffc05bffff385cffff605dffff3e61ffffb661ffffde62ffff906bffff086cffff306dffff508afffffc8affff248cffffe28effff5a8fffff8290ffff2893ffffa093ffffc894ffff36e9ffffeae9ffff12ebffffc8ecffff7cedffffa4eeffff5ef0ffff12f1ffff3af2fffff0f3ffffa4f4ffffcef5ffffd2fbffff00000000ea5e00004c6800000a69000050690000686a0000666b0000f291000090920000b0920000f69200000c950000
+    m_ExpandedIDs: eebcf9ff9abdf9ff9ebdf9ff7cbef9fff4bef9ff1cc0f9ffbea8ffff6ca9ffff94aaffff36acffffe4acffff0caeffffd2afffff80b0ffffa8b1ffff74b3ffff22b4ffff4ab5ffff6cb7ffff1ab8ffff42b9ffff56bbffff04bcffff2cbdffff4ebffffffcbfffff24c1ffff48c4fffff6c4ffff1ec6ffff8ac8ffff38c9ffff60caffff04ccffffb2ccffffdacdffffb4cfffff62d0ffff8ad1ffffa2d3ffff50d4ffff78d5ffff30d8ffffded8ffff06daffff26dcffffd2dcfffffaddffff34e0ffffe2e0ffff0ae2fffff4e3ffff6ce4ffff94e5ffff48e9ffffc0e9ffffe8eaffffacecffff24edffff4ceeffffd6f0ffff80f1ffffa8f2ffff48f4ffffeef4ffff18f6ffffd2fbffff000000001a3c0000e4500000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -444,7 +444,7 @@ MonoBehaviour:
     width: 1004
     height: 534
   m_SceneLighting: 1
-  lastFramingTime: 592.0354057447912
+  lastFramingTime: 1366.2455991707877
   m_2DMode: 0
   m_isRotationLocked: 0
   m_AudioPlay: 0

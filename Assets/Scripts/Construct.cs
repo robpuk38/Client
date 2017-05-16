@@ -39,6 +39,7 @@ public class Construct
     public static string ONACTION = "ONACTION_" + BLOWFISHKEY;
     public static string ONADS = "ONADS_" + BLOWFISHKEY;
     public static string ONLOGOUT = "ONLOGOUT_" + BLOWFISHKEY;
+    public static string ONSWITCHEDACCOUNT = "ONSWITCHEDACCOUNT_" + BLOWFISHKEY;
 
     public static string _ID = "ID";
     public static string _USERID = "USERID";
@@ -74,6 +75,7 @@ public class Construct
     public static string _TWO = "2";
     public static string _THREE = "3";
     public static string _NULL = "";
+    public static string _NEGITIVEONE = "-1";
     public static string _SWITCHED_ACCOUNTS = "SWITCHED_ACCOUNTS";
 
 

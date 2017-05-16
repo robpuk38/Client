@@ -28,7 +28,7 @@ public class ServerStatusManager : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        //PlayerPrefs.DeleteAll();
+       // PlayerPrefs.DeleteAll();
     }
 
 
@@ -196,7 +196,21 @@ public class ServerStatusManager : MonoBehaviour
             {
 
                 //Debug.Log(Construct._USERCREDITS + " " + aData[i + 1]);
-                DataManager.Instance.SetUserCredits(aData[i + 1]);
+
+                if(aData[i + 1] == Construct._NEGITIVEONE)
+                {
+                    // THIS IS CLIENT HAS LOGIN WITH A DEVICE THAT IS KNOWEN
+                    // AND WE ARE RESETING THE CREDITS TO A -1 SO WE KNOW THEY ARE A NEW MEMBER
+                    // AND THEY HAVE NOT MET THE REQURMENTS TO JOIN THE SERVER YET
+                    // SO LETS LOGOUT THIS USER AND SET THE CREDITS TO 0 FOR THEM SO THEY HAVE TO MEET THE REQUIREMENTS 
+                    DataManager.Instance.SetUserCredits(Construct._ZERO);
+                    FacebookManager.Instance.FacebookLogout();
+                }
+                else
+                {
+                    DataManager.Instance.SetUserCredits(aData[i + 1]);
+                }
+                
             }
 
             if (aData[i] == Construct._USERDEVICEID)
@@ -276,7 +290,7 @@ public class ServerStatusManager : MonoBehaviour
 
                 //Debug.Log(Construct._USERID + " " + aData[i + 1]);
 
-                if (aData[i + 1] != Construct._USERID && aData[i + 1] != Construct._ZERO && aData[i + 1] != Construct._USERDEVICEID && aData[i + 1] != Construct._USERADSMODTYPE && aData[i + 1] != Construct._USERSTATE && aData[i + 1] != Construct._NULL)
+                if (aData[i + 1] != Construct._USERID && aData[i + 1] != Construct._ZERO && aData[i + 1] != Construct._USERDEVICEID && aData[i + 1] != Construct._USERADSMODTYPE && aData[i + 1] != Construct._USERSTATE && aData[i + 1] != Construct._NULL && aData[i + 1] != Construct._USERACCESSTOKEN && aData[i + 1] != Construct._USERNAME)
                 {
 
                     if (DataManager.Instance.GetUserId() != aData[i + 1])
@@ -498,6 +512,29 @@ public class ServerStatusManager : MonoBehaviour
     {
 
         //Debug.Log("WHAT IS MY USERID SAYING?? "+DataManager.Instance.GetUserId());
+        if (DataManager.Instance.GetUserDeviceId() == Construct._SWITCHED_ACCOUNTS)
+        {
+
+
+            // the user logout we may be switching accounts so lets clean the temp table
+            if(DataManager.Instance.GetUserId() != Construct._USERID)
+            {
+                DataManager.Instance.SetUserId(Construct._USERID);
+            }
+
+            data = Construct.CONNECTIONTYPE + Construct.ONSWITCHEDACCOUNT
+              + Construct.USERDEVICEID + AndroidManager.Instance.GetAndroidDeviceID()
+              + Construct.USERIPADDRESS + GetIPAddress()
+              + Construct.USERCREDITS + Construct._ZERO
+              + Construct.USERGPSX + DataManager.Instance.GetUserGpsX()
+              + Construct.USERGPSY + DataManager.Instance.GetUserGpsY()
+              + Construct.USERGPSZ + DataManager.Instance.GetUserGpsZ()
+              + Construct.USERID + Construct._USERID;
+             
+
+            return data;
+        }
+
 
         data = Construct.CONNECTIONTYPE + Construct.ONADS
                + Construct.USERDEVICEID + AndroidManager.Instance.GetAndroidDeviceID()

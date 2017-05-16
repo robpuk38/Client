@@ -58,7 +58,7 @@ public class DataManager : MonoBehaviour {
     {
        // Debug.Log("CALLLED MORE THEN IT SHOULD BE FOR SOME REASON ");
 
-        if (url.ToString() != null && url.ToString() != "" && url.ToString() != "USERPIC")
+        if (url.ToString() != null && url.ToString() != Construct._NULL && url.ToString() != Construct._USERPIC && url.ToString() != Construct._USERNAME && url.ToString() != Construct._USERACCESSTOKEN)
         {
             Texture2D temp = new Texture2D(0, 0);
             WWW www = new WWW(url);
