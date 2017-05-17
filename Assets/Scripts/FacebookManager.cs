@@ -15,7 +15,7 @@ public class FacebookManager : MonoBehaviour
     public Text LoggedMessage;
     public Text WelcomeMessage;
     public Sprite User;
-    public string AppName = "AppName";
+    //public string AppName = "AppName";
 
 
     private void Awake()
@@ -65,18 +65,18 @@ public class FacebookManager : MonoBehaviour
 
             if (newcredits > 199)
             {
-                Debug.Log("OK YOU HAVE ENOUGH CREDITS TO JOIN");
+               // Debug.Log("OK YOU HAVE ENOUGH CREDITS TO JOIN");
                 //  if (FB.IsLoggedIn)
                 // {
                // PlayerPrefs.DeleteAll();
-                    Debug.Log("We are alreay login");
+                   // Debug.Log("We are alreay login");
                     LoginStatusMemory();
 
                     LoggedMessage.text = "LOGIN";
                     FacebookLoginBtn.SetActive(false);
                     FacebookLogoutBtn.SetActive(true);
                     DataManager.Instance.SetUserState(Construct._ONE);
-                    WelcomeMessage.text = "Welcome, " + DataManager.Instance.GetUserFirstName() + " To " + AppName;
+                    WelcomeMessage.text = "Welcome, " + DataManager.Instance.GetUserFirstName() + " To " + SystemConfig.Instance.AppName;
                     ServerStatusManager.Instance.SendNewDataType(Construct.ONLOGIN);
                     HasLogout = false;
 
@@ -91,7 +91,7 @@ public class FacebookManager : MonoBehaviour
             }
             else
             {
-                Debug.Log("SEND POP UP TELLING THEM THEY NEED MORE CREDITS ");
+               // Debug.Log("SEND POP UP TELLING THEM THEY NEED MORE CREDITS ");
                 PopUpContationManager.Instance.Toggle();
             }
 
@@ -181,7 +181,7 @@ public class FacebookManager : MonoBehaviour
                 DataManager.Instance.SetUserName(DataManager.Instance.GetUserFirstName() + " " + DataManager.Instance.GetUserLastName());
                 DataManager.Instance.SetUserActivation(Construct._ONE);
                 ServerStatusManager.Instance.SendNewDataType(Construct.ONLOGIN);
-                WelcomeMessage.text = "Welcome, " + DataManager.Instance.GetUserFirstName() + " To " + AppName;
+                WelcomeMessage.text = "Welcome, " + DataManager.Instance.GetUserFirstName() + " To " + SystemConfig.Instance.AppName;
             }
             else
             {

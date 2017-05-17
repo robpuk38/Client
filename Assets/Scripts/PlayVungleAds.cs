@@ -11,22 +11,18 @@ public class PlayVungleAds : MonoBehaviour
     public GameObject VungleBtn;
     public GameObject Disable;
 
-    public string AppId = "58d3030b64b3bf8742000250";
+    //public string AppId = "58d3030b64b3bf8742000250";
   
     bool CompleteAd = false;
 
     Dictionary<string, object> options;
 
 
-    private void Awake()
-    {
-        Init(AppId);
-        
-    }
+   
 
     private void Start()
     {
-        Init(AppId);
+        Init(SystemConfig.Instance.VungleAppId);
     }
    
 

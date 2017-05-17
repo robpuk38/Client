@@ -1,40 +1,98 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿
 using UnityEngine;
 using UnityEngine.UI;
-using System.Net;
-using System.Net.Sockets;
-using System;
+using UnityEngine.EventSystems;
+
 
 public class ChatManager : MonoBehaviour {
 
-    public string UserID = "1";
+    private static ChatManager instance;
+    public static ChatManager Instance { get { return instance; } }
+    public string FromUserID = "1";
+    public string ToUserID = "0";
+    private string Message = "";
+   
     public string UserName = "username";
     public string UserPic = "somepic";
     public InputField TextInput;
     public Text DebugMessage;
     public GameObject MessagePanel;
     public GameObject SpawnMessageList;
+    public GameObject ChatSystemContainor;
+    public GameObject ChatMenu;
+    public Sprite Chaton;
+    public Sprite Chatoff;
+    private Sprite CurrentUsersPic;
+    public bool ShowChat { get; set; }
+
+    private void Awake()
+    {
+        instance = this;
+        ChatSystemContainor.SetActive(false);
+    }
 
 
+    private void GetCurrentUserData()
+    {
+        if(DataManager.Instance != null)
+        {
+            FromUserID = DataManager.Instance.GetUserId();
+            UserName = DataManager.Instance.GetUserName();
+            // if (EventSystem.current.currentSelectedGameObject.GetComponent<Button>() != null)
+            //{
+            //   Debug.Log("WhAT DID WE CLICK: " + EventSystem.current.currentSelectedGameObject.GetComponent<Button>().name);
+            // }
+            CurrentUsersPic = DataManager.Instance.UserImagePic.GetComponent<Image>().sprite;
+        }
+    }
+
+    public void ToggleChatBtn()
+    {
+        if(ChatSystemContainor.activeSelf == false)
+        {
+            ShowChat = true;
+            ServerStatusManager.Instance.ShowMenu = false;
+            ChatSystemContainor.SetActive(true);
+            ChatMenu.GetComponent<Image>().sprite = Chaton;
+        }
+        else
+        {
+            ShowChat = false;
+            ChatSystemContainor.SetActive(false);
+            ChatMenu.GetComponent<Image>().sprite = Chatoff;
+        }
+    }
 
     public void OnSubmitBtn()
     {
 
-        if(TextInput.text == "" || TextInput.text.Length < 1)
+        if(TextInput.text == "" || TextInput.text.Length < 1 )
         {
             Debug.Log("Empty Return");
             DebugMessage.text = "Can Not Send Empty Message!";
             return;
         }
-        Debug.Log("MY USER ID = "+ UserID + " MY USERNAME == "+ UserName);
+        if (TextInput.text == "" || TextInput.text.Length > 120)
+        {
+            Debug.Log("To long Return");
+            DebugMessage.text = "Messsage Was To Long Only Use 120 Characters Max!";
+            return;
+        }
+        Debug.Log("MY USER ID = "+ FromUserID + " MY USERNAME == "+ UserName);
 
-        SendDataToServer(UserID, TextInput.text,  "0");
+        SendDataToServer(FromUserID, UserName, CurrentUsersPic, TextInput.text,  ToUserID);
     }
 
     private void Update()
     {
         PostMessageData();
+
+        if(ShowChat == false)
+        {
+            ChatSystemContainor.SetActive(false);
+            ChatMenu.GetComponent<Image>().sprite = Chatoff;
+        }
+        GetCurrentUserData();
     }
 
     private void PostMessageData()
@@ -46,70 +104,57 @@ public class ChatManager : MonoBehaviour {
         }
        // Debug.Log("TEXT INPUT: = " + TextInput.text);
         DebugMessage.text = TextInput.text;
+        Message = DebugMessage.text;
     }
-    int test = 0;
-    private void SendDataToServer(string _FromUserID, string _Message, string _ToUserID )
+   
+    private void SendDataToServer(string _FromUserID,string Username, Sprite CurrentUserspic, string _Message, string _ToUserID )
     {
         Debug.Log("FROM WHO? "+ _FromUserID + " SAID WHAT? "+ _Message + " TO WHO? " + _ToUserID);
-        
-        ServerConnect("|FROMUSERID|"+_FromUserID+"|THEMESSAGE|" + _Message+"|TOUSERID|" + _ToUserID+"|CONNECTIONTYPE|"+test);
 
-    }
+        string data = Construct.FROMUSERID + _FromUserID + Construct.USERNAME + Username + Construct.THEMESSAGE + _Message + Construct.TOUSERID + _ToUserID;
+        SetFromUserId(_FromUserID);
+        SetToUserId(_ToUserID);
+        SetMessage(_Message);
+        CreateNewMessage(data, CurrentUserspic);
 
-    private static int port = 3000;
-    private static string IpAddress = "10.0.0.7";
-
-    private void ServerConnect(string mess)
-    {
-        Socket SocketListener = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        IPEndPoint ipEnd = new IPEndPoint(IPAddress.Parse(IpAddress), port);
-        SocketListener.Connect(ipEnd);
-
-        byte[] Buffer = new byte[SocketListener.SendBufferSize];
-        int ReadBytes = 0;
-        //do
-       // {
-            
-            SocketListener.Send(System.Text.Encoding.UTF8.GetBytes(mess));
-        // byte[] pbd = new byte[4];
-        // SocketListener.Receive(pbd);
-
-
-        // } while (mess.Length > 0);
-        if (Buffer.Length > 0)
-        {
-            ReadBytes = SocketListener.Receive(Buffer);
-
-            byte[] rData = new byte[ReadBytes];
-            Array.Copy(Buffer, rData, ReadBytes);
-            Debug.Log("We Recived: " + System.Text.Encoding.UTF8.GetString(rData));
-
-
-            // some how we need to get the data back into the client
-            //something like a new message
-            //Newmessage("mess", userpic ,null)
-            CreateNewMessage(System.Text.Encoding.UTF8.GetString(rData));
-        }
-        
-        SocketListener.Close();
-
-
-
+        ServerStatusManager.Instance.SendNewDataType(Construct.ONNEWMESSAGE);
     }
 
 
-    private void CreateNewMessage(string mess)
+    public void SetFromUserId(string set)
+    {
+        FromUserID = set;
+    }
+
+    public string GetFromUserId()
+    {
+        return FromUserID;
+    }
+
+    public void SetToUserId(string set)
+    {
+        ToUserID = set;
+    }
+
+    public string GetToUserId()
+    {
+        return ToUserID;
+    }
+
+    public void SetMessage(string set)
+    {
+        Message = set;
+    }
+
+    public string GetMessage()
+    {
+        return Message;
+    }
+
+    private void CreateNewMessage(string mess, Sprite Currentuserspic)
     {
 
-        // we know we want to instantionate the prefab 
-        //MessagePanel
-        //SpawnMessageList
-
-       
-
-      
-
-            GameObject NewMessage = (GameObject)Instantiate(MessagePanel);
+        GameObject NewMessage = (GameObject)Instantiate(MessagePanel);
         Debug.Log(NewMessage.transform.GetChild(0).name); // UserPic
         Debug.Log(NewMessage.transform.GetChild(1).name); // UserName
         Debug.Log(NewMessage.transform.GetChild(2).name); // PostMessage
@@ -117,42 +162,33 @@ public class ChatManager : MonoBehaviour {
 
         Text UserName = NewMessage.transform.GetChild(1).GetComponent<Text>();
         Text PostMessage = NewMessage.transform.GetChild(2).GetComponent<Text>();
-
+        Image MyUserPic = NewMessage.transform.GetChild(0).GetComponent<Image>();
+        MyUserPic.sprite = Currentuserspic;
 
         string[] aData = mess.Split('|');
         for (int i = 0; i < aData.Length - 1; i++)
         {
-            if (aData[i] == "FROMUSERID")
+            if (aData[i] == Construct._FROMUSERID)
             {
-                UserName.text = aData[i + 1];
-                Debug.Log("FROMUSERID: " + aData[i + 1]);
+                Debug.Log(Construct._FROMUSERID+": " + aData[i + 1]);
             }
-            if (aData[i] == "THEMESSAGE")
+            if (aData[i] == Construct._THEMESSAGE)
             {
                 PostMessage.text = aData[i + 1];
-                Debug.Log("THEMESSAGE: " + aData[i + 1]);
+                Debug.Log(Construct._THEMESSAGE+": " + aData[i + 1]);
             }
-            if (aData[i] == "TOUSERID")
+            if (aData[i] == Construct._TOUSERID)
             {
 
-                Debug.Log("TOUSERID: " + aData[i + 1]);
+                Debug.Log(Construct._TOUSERID+": " + aData[i + 1]);
             }
-            if (aData[i] == "CONNECTIONTYPE")
+
+            if (aData[i] == Construct._USERNAME)
             {
-                if (test == 1)
-                {
-                    // we sent to server as 2
-                    test = 2;
-                }
-                if (test == 0)
-                {
-                   // we sent to server as 1
-                    test = 1;
-                }
-               
-                Debug.Log("CONNECTIONTYPE: " + aData[i + 1]);
-                
+                UserName.text = aData[i + 1];
+                Debug.Log(Construct._USERNAME+": " + aData[i + 1]);
             }
+
         }
         
       
@@ -163,6 +199,7 @@ public class ChatManager : MonoBehaviour {
 
         NewMessage.transform.SetParent(SpawnMessageList.transform);
         NewMessage.transform.localScale = Vector3.one;
+        TextInput.text = "";
 
     }
 }

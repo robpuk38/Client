@@ -24,18 +24,18 @@ public class AndroidManager : MonoBehaviour {
     {
         if (pause)
         {
-            Debug.Log("MYAPPTEST" + " WE ARE PAUSED AS TRUE");
+           // Debug.Log("MYAPPTEST" + " WE ARE PAUSED AS TRUE");
         }
         else
         {
-            Debug.Log("MYAPPTEST" + " WE ARE NOT PAUSED SO ITS  FALSE");
+            //Debug.Log("MYAPPTEST" + " WE ARE NOT PAUSED SO ITS  FALSE");
         }
 
     }
 
     private void OnApplicationQuit()
     {
-        Debug.Log("MYAPPTEST" + " WE HAVE QUIT THE APP");
+       // Debug.Log("MYAPPTEST" + " WE HAVE QUIT THE APP");
     }
 
     private void OnApplicationFocus(bool focus)
@@ -44,21 +44,21 @@ public class AndroidManager : MonoBehaviour {
         {
             // this is true
             
-            Debug.Log("MYAPPTEST" + " WE ARE FOUCSED THIS MEANS WE ARE IN THE APP");
+           // Debug.Log("MYAPPTEST" + " WE ARE FOUCSED THIS MEANS WE ARE IN THE APP");
         }
         else
         {
             // this is false
             SendNotification(300);
            
-            Debug.Log("MYAPPTEST" + " WE ARE NOT FOUCUSED MEANS WE ARE IN THE BACKGROUND BUT STILL RUNNING");
+           // Debug.Log("MYAPPTEST" + " WE ARE NOT FOUCUSED MEANS WE ARE IN THE BACKGROUND BUT STILL RUNNING");
         }
     }
 
 
     public static void SendNotification(int id)
     {
-        Debug.Log("MYAPPTEST" + " WE ARE SENDING A NOTIFICATION THOUGH ");
+        //Debug.Log("MYAPPTEST" + " WE ARE SENDING A NOTIFICATION THOUGH ");
 
         AndroidJavaClass OurNotificationsPlugin;
 
@@ -81,13 +81,13 @@ public class AndroidManager : MonoBehaviour {
                 String message = "My Messsage Boo";
                 String ticker = message;
                 long delaytime = 10800; // 3 hours 
-                Debug.Log("MYAPPTEST" + "  we are even better to go now becaue it has access ");
+               // Debug.Log("MYAPPTEST" + "  we are even better to go now becaue it has access ");
                 OurNotificationsPlugin.CallStatic("GetNotification", id, delaytime * 1000L, title, message, ticker, sound ? 1 : 0, vibration ? 1 : 0, lights ? 0 : 1, SIconImage, LIconImage, bgColor.r * 65536 + bgColor.g * 256 + bgColor.b, executeMode, MainUnityNativeActivity);
             }
             else
             {
                 //damit we have a error again but its not from the android java calss its we have a null
-                Debug.Log("MYAPPTEST" + "  damit we have a error again but its not from the android java calss its we have a null ");
+               // Debug.Log("MYAPPTEST" + "  damit we have a error again but its not from the android java calss its we have a null ");
             }
 
             // hey we are good to go lets do it
@@ -95,12 +95,12 @@ public class AndroidManager : MonoBehaviour {
         catch (AndroidJavaException ex)
         {
             // fuck we crashed
-            Debug.Log("MYAPPTEST" + "   fuck we crashed " + ex.Message);
+            //Debug.Log("MYAPPTEST" + "   fuck we crashed " + ex.Message);
         }
         catch (Exception ex)
         {
             // dam we crashed from some exeption 
-            Debug.Log("MYAPPTEST" + "   dam we crashed from some exeption  " + ex.Message);
+           // Debug.Log("MYAPPTEST" + "   dam we crashed from some exeption  " + ex.Message);
         }
 
     }

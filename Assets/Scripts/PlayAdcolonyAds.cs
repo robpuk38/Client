@@ -8,16 +8,13 @@ public class PlayAdcolonyAds : MonoBehaviour {
     public Text DebugText;
     public GameObject AdcolonyBtn;
     public GameObject Disable;
-    public string AppId = "app45c8b1591bd14f93a2";
-    public string ZoneId = "vz83776cea456c492b95";
+   // public string AppId = "app45c8b1591bd14f93a2";
+   // public string ZoneId = "vz83776cea456c492b95";
 
     bool CompleteAd = false;
    
     AdColony.InterstitialAd Ad = null;
-    private void Awake()
-    {
-        ConfigureAds();
-    }
+  
 
 
     private void Start()
@@ -29,7 +26,7 @@ public class PlayAdcolonyAds : MonoBehaviour {
         DebugText.text = "Ads Being Configured";
         AdcolonyBtn.GetComponent<Button>().enabled = false;
         AdColony.AppOptions appOptions = new AdColony.AppOptions();
-        AdColony.Ads.Configure(AppId, appOptions, ZoneId);
+        AdColony.Ads.Configure(SystemConfig.Instance.AdcolonyAppId, appOptions, SystemConfig.Instance.AdcolonyZoneId);
 
         RequestAd();
         
@@ -42,7 +39,7 @@ public class PlayAdcolonyAds : MonoBehaviour {
         adOptions.ShowPostPopup = false;
         adOptions.ShowPrePopup = false;
 
-        AdColony.Ads.RequestInterstitialAd(ZoneId,adOptions);
+        AdColony.Ads.RequestInterstitialAd(SystemConfig.Instance.AdcolonyZoneId, adOptions);
         intEvenetHandler();
     }
 

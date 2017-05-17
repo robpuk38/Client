@@ -4,11 +4,16 @@ using UnityEngine;
 
 public class UI_DestroyMessage : MonoBehaviour {
 
-
+    private void Start()
+    {
+        OnClose();
+    }
 
     public void OnClose()
     {
-        Destroy(gameObject);
+        Destroy(gameObject,10);
     }
+
+   
 
 }

@@ -15,8 +15,12 @@ public class ServerStatusManager : MonoBehaviour
 
     public Text Message;
     public GameObject ServerStatusContainor;
-    public string IpAddress = "127.0.0.1";
-    public int port = 3000;
+    public GameObject MenuSwitchContainor;
+    public GameObject ToggleMenu;
+    public Sprite Menuon;
+    public Sprite Menuoff;
+   // public string IpAddress = "127.0.0.1";
+    //public int port = 3000;
     
 
     private string data = "";
@@ -28,11 +32,27 @@ public class ServerStatusManager : MonoBehaviour
     private void Awake()
     {
         instance = this;
-       // PlayerPrefs.DeleteAll();
+        
+        MenuSwitchContainor.SetActive(false);
     }
 
+    public void ToggleMenuBtn()
+    {
+        if (ServerStatusContainor.activeSelf == false)
+        {
+            ShowMenu = true;
+            ChatManager.Instance.ShowChat = false;
+            ServerStatusContainor.SetActive(true);
+            ToggleMenu.GetComponent<Image>().sprite = Menuon;
+        }
+        else
+        {
+            ShowMenu = false;
+            ServerStatusContainor.SetActive(false);
+            ToggleMenu.GetComponent<Image>().sprite = Menuoff;
+        }
+    }
 
-    
     private void Disconnected(Socket sender)
     {
         sender.Shutdown(SocketShutdown.Both);
@@ -44,7 +64,7 @@ public class ServerStatusManager : MonoBehaviour
     {
         try
         {
-            remoteEP = new IPEndPoint(IPAddress.Parse(IpAddress), port);
+            remoteEP = new IPEndPoint(IPAddress.Parse(SystemConfig.Instance.ServerIpAddress), SystemConfig.Instance.ServerPortNumber);
 
             // Create a TCP/IP  socket.  
             sender = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -74,6 +94,11 @@ public class ServerStatusManager : MonoBehaviour
                     SendData(sender, ONLOGOUT());
 
                 }
+                if (type == Construct.ONNEWMESSAGE)
+                {
+                    SendData(sender, ONNEWMESSAGE());
+
+                }
                 byte[] bytes = new Byte[sender.SendBufferSize];
                 RecivedData(sender, bytes);
                 //SendData(sender, data);
@@ -101,9 +126,9 @@ public class ServerStatusManager : MonoBehaviour
             //Debug.Log(e.ToString());
         }
     }
-
-   
-   public bool CheckIfLoadedImage { get; set; }
+    public bool ShowMenu { get; set; }
+    public bool FullLogIn { get; set; }
+    public bool CheckIfLoadedImage { get; set; }
     public bool CheckAndSendOnce { get; set; }
 
     private void ClientUpdateDataManager(string data)
@@ -119,15 +144,16 @@ public class ServerStatusManager : MonoBehaviour
 
                 if (aData[i + 1] == Construct._TWO && FacebookManager.Instance.FacebookLogoutBtn.activeSelf == true && DataManager.Instance.GetUserState() == Construct._TWO)
                 {
+                    FullLogIn = true;
                     // THE CLIENT IS LOGIN WE RETURNED A 1 SO LETS SEND BACK A 2
-                    Debug.Log("ARE WE LOGGIN SUCCESSFLULLY CHANGE STATE TO 2:= " + aData[i + 1]);
+                    // Debug.Log("ARE WE LOGGIN SUCCESSFLULLY CHANGE STATE TO 2:= " + aData[i + 1]);
                     DataManager.Instance.SetUserState(Construct._THREE);
                 }
 
                 if (aData[i + 1] == Construct._ONE && FacebookManager.Instance.FacebookLogoutBtn.activeSelf == true && DataManager.Instance.GetUserState() == Construct._ONE)
                 {
                     // THE CLIENT IS LOGIN WE RETURNED A 1 SO LETS SEND BACK A 2
-                    Debug.Log("ARE WE LOGGIN SUCCESSFLULLY CHANGE STATE TO 1:= " + aData[i + 1]);
+                  //  Debug.Log("ARE WE LOGGIN SUCCESSFLULLY CHANGE STATE TO 1:= " + aData[i + 1]);
                     DataManager.Instance.SetUserState(Construct._TWO);
                 }
 
@@ -135,7 +161,7 @@ public class ServerStatusManager : MonoBehaviour
                 {
 
 
-                    Debug.Log(Construct._USERSTATE + " OUR USER STATE IS A BIG NOTHING SO WE ARE NOT LOGIN " + aData[i + 1]);
+                  //  Debug.Log(Construct._USERSTATE + " OUR USER STATE IS A BIG NOTHING SO WE ARE NOT LOGIN " + aData[i + 1]);
                     FacebookManager.Instance.LoggedMessage.text = "LOGOUT";
                     DataManager.Instance.SetUserState(Construct._ZERO);
                     //ServerStatusManager.Instance.SendNewDataType(Construct.ONLOGOUT);
@@ -145,7 +171,7 @@ public class ServerStatusManager : MonoBehaviour
                     // DataManager.Instance.SetUserId(Construct._USERID);
                     // DataManager.Instance.SetUserName(Construct._USERGUEST);
                     // DataManager.Instance.SetUserPic(Construct._USERPIC);
-
+                    FullLogIn = false;
                     DataManager.Instance.UserImagePic.GetComponent<Image>().sprite = FacebookManager.Instance.User;
                     CheckIfLoadedImage = false;
                     CheckAndSendOnce = false;
@@ -174,12 +200,12 @@ public class ServerStatusManager : MonoBehaviour
             {
                 if (DataManager.Instance.GetUserAccessToken() != aData[i + 1])
                 {
-                    Debug.Log(" THIS ACCESS TOKEN DOES NOT MATCH WHAT IS STORED " + aData[i + 1]);
+                   // Debug.Log(" THIS ACCESS TOKEN DOES NOT MATCH WHAT IS STORED " + aData[i + 1]);
                     DataManager.Instance.SetUserAccessToken(aData[i + 1]);
                 }
                 else
                 {
-                    Debug.Log("THIS ACCESSTOKEN "+Construct._USERACCESSTOKEN + " " + aData[i + 1]);
+                   // Debug.Log("THIS ACCESSTOKEN "+Construct._USERACCESSTOKEN + " " + aData[i + 1]);
                    // DataManager.Instance.SetUserAccessToken(aData[i + 1]);
                 }
                     
@@ -295,13 +321,13 @@ public class ServerStatusManager : MonoBehaviour
 
                     if (DataManager.Instance.GetUserId() != aData[i + 1])
                     {
-                        Debug.Log("THIS USER ID DOES NOT MATCH " + aData[i + 1]);
+                       // Debug.Log("THIS USER ID DOES NOT MATCH " + aData[i + 1]);
                         DataManager.Instance.SetUserId(aData[i + 1]);
                     }
-                    else
-                    {
-                        Debug.Log("THIS USER ID MATCHS " + aData[i + 1]);
-                    }
+                    //else
+                   // {
+                        //Debug.Log("THIS USER ID MATCHS " + aData[i + 1]);
+                   // }
                         //Debug.Log("WE ARE SETTING THE USERS ID AS THIS RIGHT NOW " + aData[i + 1]);
                        
                 }
@@ -429,7 +455,7 @@ public class ServerStatusManager : MonoBehaviour
        // Debug.Log("USERID: "+ DataManager.Instance.GetUserId());
        // Debug.Log("USERNAME: " + DataManager.Instance.GetUserName());
        // Debug.Log("USERPIC: " + DataManager.Instance.GetUserPic());
-        Debug.Log("USERSTATE: " + DataManager.Instance.GetUserState());
+        //Debug.Log("USERSTATE: " + DataManager.Instance.GetUserState());
         if (DataManager.Instance.GetUserId() != Construct._USERID 
             && DataManager.Instance.GetUserName() != Construct._USERNAME
             && DataManager.Instance.GetUserPic() != Construct._USERPIC
@@ -447,7 +473,7 @@ public class ServerStatusManager : MonoBehaviour
             {
                 DataManager.Instance.SetUserState(Construct._ONE);
             }
-            FacebookManager.Instance.WelcomeMessage.text = "Welcome, " + DataManager.Instance.GetUserFirstName() + " To " + FacebookManager.Instance.AppName;
+            FacebookManager.Instance.WelcomeMessage.text = "Welcome, " + DataManager.Instance.GetUserFirstName() + " To " + SystemConfig.Instance.AppName;
             SendNewDataType(Construct.ONLOGIN);
             FacebookManager.Instance.HasLogout = false;
         }
@@ -550,6 +576,16 @@ public class ServerStatusManager : MonoBehaviour
         return data;
     }
 
+
+    private string ONNEWMESSAGE()
+    {
+        data = Construct.CONNECTIONTYPE + Construct.ONNEWMESSAGE
+           + Construct.FROMUSERID + ChatManager.Instance.GetFromUserId()
+           + Construct.TOUSERID + ChatManager.Instance.GetToUserId()
+           + Construct.THEMESSAGE + ChatManager.Instance.GetMessage();
+           return data;
+    }
+
     private string ONLOGIN()
     {
 
@@ -601,7 +637,15 @@ public class ServerStatusManager : MonoBehaviour
             PingServerTime = 0;
         }
         DataManager.Instance.UserinputCredits.text = DataManager.Instance.UserCredits.text;
-        //SendNewDataType(Construct.ONADS);
+       
+
+        if (DataManager.Instance.GetUserState() == Construct._THREE && FullLogIn == true && ShowMenu == false)
+        {
+           // Debug.Log("IT SEEMS WE ARE FULLY LOGIN");
+            ServerStatusContainor.SetActive(false);
+            MenuSwitchContainor.SetActive(true);
+            ToggleMenu.GetComponent<Image>().sprite = Menuoff;
+        }
     }
 
     
