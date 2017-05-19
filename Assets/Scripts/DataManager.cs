@@ -64,12 +64,18 @@ public class DataManager : MonoBehaviour {
             WWW www = new WWW(url);
             yield return www;
 
-            
-            
+
+            try
+            {
                 temp = www.texture;
                 Sprite sprite = Sprite.Create(temp, new Rect(0, 0, temp.width, temp.height), new Vector2(0.5f, 0.5f));
                 Transform themb = go.transform;
                 themb.GetComponent<Image>().sprite = sprite;
+            }
+            catch {
+                Debug.Log("WE CRASHED");
+            }
+
 
            
 

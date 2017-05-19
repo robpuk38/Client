@@ -20,8 +20,9 @@ public class ServerStatusManager : MonoBehaviour
     public Sprite Menuon;
     public Sprite Menuoff;
 
-    private bool Newmessage = false;
-
+    public bool Newmessage { get; set; }
+    public bool hasRecived { get; set; }
+    public string ChatData = "";
     private string data = "";
     private Socket sender;
     private IPEndPoint remoteEP;
@@ -49,8 +50,14 @@ public class ServerStatusManager : MonoBehaviour
             if (bytestoread > 0)
             {
                 data = Encoding.ASCII.GetString(info.buffer, 0, bytestoread);
+                ChatData = Encoding.ASCII.GetString(info.buffer, 0, bytestoread);
+                if (ChatData.Contains(Construct.FROMUSERID))
+                {
+                    Newmessage = false;
+                    hasRecived = false;
+                }
 
-                Newmessage = true;
+               
                 info.socket.BeginReceive(info.buffer, 0, 255, SocketFlags.None, new AsyncCallback(ReceiveCallback), info);
 
                 try
@@ -791,10 +798,18 @@ public class ServerStatusManager : MonoBehaviour
             ToggleMenu.GetComponent<Image>().sprite = Menuoff;
         }
 
-        if (Newmessage == true)
+        if (Newmessage == false && hasRecived == false && DataManager.Instance.GetUserState() == Construct._THREE && FullLogIn == true && ChatData.Length > 1)
         {
-            ClientUpdateChatManager(data);
-            Newmessage = false;
+           
+            Newmessage = true;     
+            hasRecived = true;
+            //Debug.Log("DID WE MAKE IT IN HERE AT ALL HELP ME PLEASE");
+            // everything is ok all requierments are met so pass the ChatData through
+            ClientUpdateChatManager(ChatData);
+            // Now Reset The caht data back to null
+            ChatData = Construct._NULL;
+
+
         }
         if (DataManager.Instance.GetUserState() == Construct._ONE || DataManager.Instance.GetUserState() == Construct._TWO)
         {
