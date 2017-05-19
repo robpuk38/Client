@@ -202,4 +202,110 @@ public class ChatManager : MonoBehaviour {
         TextInput.text = "";
 
     }
+
+    public void CreateFomeMessage(string data)
+    {
+        //Debug.Log(data);
+        string FromUserId = "";
+        string FromUserName = "";
+        string Message = "";
+        string FromUserPic = "";
+        string[] aData = data.Split('|');
+        for (int i = 0; i < aData.Length - 1; i++)
+        {
+            if (aData[i] == Construct._FROMUSERID)
+            {
+                FromUserId = aData[i + 1];
+                Debug.Log(Construct._FROMUSERID + ": " + aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._FROMUSERPIC)
+            {
+                FromUserPic = aData[i + 1];
+                Debug.Log(Construct._FROMUSERPIC + ": " + aData[i + 1]);
+
+                
+            }
+            if (aData[i] == Construct._THEMESSAGE)
+            {
+                Message = aData[i + 1];
+                Debug.Log(Construct._THEMESSAGE + ": " + aData[i + 1]);
+            }
+            if (aData[i] == Construct._TOUSERID)
+            {
+
+                Debug.Log(Construct._TOUSERID + ": " + aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._FROMUSERNAME)
+            {
+                FromUserName = aData[i + 1];
+                Debug.Log(Construct._FROMUSERNAME + ": " + aData[i + 1]);
+            }
+
+        }
+        if (FromUserId != Construct._NULL && DataManager.Instance.GetUserId() != FromUserId)
+        { 
+        GameObject NewMessage = (GameObject)Instantiate(MessagePanel);
+        Debug.Log(NewMessage.transform.GetChild(0).name); // UserPic
+        Debug.Log(NewMessage.transform.GetChild(1).name); // UserName
+        Debug.Log(NewMessage.transform.GetChild(2).name); // PostMessage
+        Debug.Log(NewMessage.transform.GetChild(3).name); // DeleteBtn
+
+        Text UserName = NewMessage.transform.GetChild(1).GetComponent<Text>();
+        Text PostMessage = NewMessage.transform.GetChild(2).GetComponent<Text>();
+        Transform UserPic = NewMessage.transform.GetChild(0).GetComponent<Transform>();
+
+           
+
+
+        for (int i = 0; i < aData.Length - 1; i++)
+        {
+            if (aData[i] == Construct._FROMUSERID)
+            {
+                Debug.Log(Construct._FROMUSERID + ": " + aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._FROMUSERPIC)
+            {
+                //UserName.text = aData[i + 1];
+                Debug.Log(Construct._FROMUSERPIC + ": " + aData[i + 1]);
+                    DataManager.Instance.new2dpicture(UserPic.gameObject, FromUserPic);
+                }
+            if (aData[i] == Construct._THEMESSAGE)
+            {
+
+                    if (PostMessage.text == Message)
+                    {
+                        return;
+                    }
+                    PostMessage.text = aData[i + 1];
+                    Debug.Log(Construct._THEMESSAGE + ": " + aData[i + 1]);
+            }
+            if (aData[i] == Construct._TOUSERID)
+            {
+
+                Debug.Log(Construct._TOUSERID + ": " + aData[i + 1]);
+            }
+
+            if (aData[i] == Construct._FROMUSERNAME)
+            {
+                UserName.text = aData[i + 1];
+                Debug.Log(Construct._FROMUSERNAME + ": " + aData[i + 1]);
+            }
+
+        }
+
+
+
+
+
+
+        
+            NewMessage.transform.SetParent(SpawnMessageList.transform);
+            NewMessage.transform.localScale = Vector3.one;
+        }
+        
+
+    }
 }

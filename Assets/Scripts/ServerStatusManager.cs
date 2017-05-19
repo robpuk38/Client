@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Sockets;
 using System;
 using System.Text;
-
+using System.Collections.Generic;
 
 public class ServerStatusManager : MonoBehaviour
 {
@@ -19,21 +19,83 @@ public class ServerStatusManager : MonoBehaviour
     public GameObject ToggleMenu;
     public Sprite Menuon;
     public Sprite Menuoff;
-   // public string IpAddress = "127.0.0.1";
-    //public int port = 3000;
-    
+
+    private bool Newmessage = false;
 
     private string data = "";
     private Socket sender;
     private IPEndPoint remoteEP;
+    public class SocketInfo
+    {
+        public byte[] buffer = new byte[2048];
+        public Socket socket = null;
+    }
+    private static List<SocketInfo> socketList = new List<SocketInfo>();
 
-   
 
     private void Awake()
     {
         instance = this;
         
         MenuSwitchContainor.SetActive(false);
+    }
+
+    private void ReceiveCallback(IAsyncResult result)
+    {
+        SocketInfo info = (SocketInfo)result.AsyncState;
+        try
+        {
+            int bytestoread = info.socket.EndReceive(result);
+            if (bytestoread > 0)
+            {
+                data = Encoding.ASCII.GetString(info.buffer, 0, bytestoread);
+
+                Newmessage = true;
+                info.socket.BeginReceive(info.buffer, 0, 255, SocketFlags.None, new AsyncCallback(ReceiveCallback), info);
+
+                try
+                {
+                    byte[] bytes = Encoding.ASCII.GetBytes(data);
+                    lock (socketList)
+                    {
+
+                        foreach (SocketInfo _info in socketList)
+                        {
+                            try
+                            {
+                                _info.socket.Send(bytes, bytes.Length, SocketFlags.None);
+
+                                Debug.Log("Data Comming IN: "+data);
+                            }
+                            catch { }
+                        }
+                    }
+                }
+                catch
+                {
+                    Console.WriteLine("Unable to send data. Connection lost.");
+                }
+
+            }
+            else
+            {
+                lock (socketList)
+                {
+                    socketList.Remove(info);
+                }
+                 Debug.Log("Client finished normally.");
+                info.socket.Close();
+            }
+        }
+        catch (Exception e)
+        {
+            lock (socketList)
+            {
+                socketList.Remove(info);
+            }
+             Debug.Log("Client Disconnected.");
+             Debug.Log(e);
+        }
     }
 
     public void ToggleMenuBtn()
@@ -55,8 +117,9 @@ public class ServerStatusManager : MonoBehaviour
 
     private void Disconnected(Socket sender)
     {
-        sender.Shutdown(SocketShutdown.Both);
-        sender.Close();
+        //sender.Shutdown(SocketShutdown.Both);
+        //sender.Disconnect(true);
+        //sender.Close();
     }
 
    
@@ -64,45 +127,59 @@ public class ServerStatusManager : MonoBehaviour
     {
         try
         {
-            remoteEP = new IPEndPoint(IPAddress.Parse(SystemConfig.Instance.ServerIpAddress), SystemConfig.Instance.ServerPortNumber);
 
-            // Create a TCP/IP  socket.  
-            sender = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            
+                remoteEP = new IPEndPoint(IPAddress.Parse(SystemConfig.Instance.ServerIpAddress), SystemConfig.Instance.ServerPortNumber);
+
+                // Create a TCP/IP  socket.  
+                sender = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+           
+                SocketInfo info = new SocketInfo();
+                info.socket = sender;
+                lock (socketList)
+                {
+                
+                    socketList.Add(info);
+                }
+            
 
             // Connect the socket to the remote endpoint. Catch any errors.  
             try
             {
-                sender.Connect(remoteEP);
 
-                if(type == Construct.ONAWAKE)
+                info.socket.Connect(remoteEP);
+
+              
+
+
+                if (type == Construct.ONAWAKE)
                 {
-                    SendData(sender, ONAWAKE());
+                    SendSelfData(sender, ONAWAKE());
                     
                 }
                 if (type == Construct.ONADS)
                 {
-                    SendData(sender, ONADS());
+                    SendSelfData(sender, ONADS());
 
                 }
                 if (type == Construct.ONLOGIN)
                 {
-                    SendData(sender, ONLOGIN());
+                    SendSelfData(sender, ONLOGIN());
 
                 }
                 if (type == Construct.ONLOGOUT)
                 {
-                    SendData(sender, ONLOGOUT());
+                    SendSelfData(sender, ONLOGOUT());
 
                 }
                 if (type == Construct.ONNEWMESSAGE)
                 {
-                    SendData(sender, ONNEWMESSAGE());
+                    SendSelfData(sender, ONNEWMESSAGE());
 
                 }
-                byte[] bytes = new Byte[sender.SendBufferSize];
-                RecivedData(sender, bytes);
-                //SendData(sender, data);
-                //
+                info.socket.BeginReceive(info.buffer, 0, info.buffer.Length, SocketFlags.None, new AsyncCallback(ReceiveCallback), info);
+                ClientUpdateDataManager(data);
+               
             }
             catch (ArgumentNullException ane)
             {
@@ -117,6 +194,10 @@ public class ServerStatusManager : MonoBehaviour
             catch (Exception e)
             {
                 //Debug.Log("Unexpected exception : {0}" + e.ToString());
+                lock (socketList)
+                {
+                    socketList.Remove(info);
+                }
             }
 
 
@@ -480,7 +561,13 @@ public class ServerStatusManager : MonoBehaviour
     }
 
 
-    private void RecivedData(Socket sender, byte[] bytes)
+    private void ClientUpdateChatManager(string Chatdata)
+    {
+        ChatManager.Instance.CreateFomeMessage(Chatdata);
+        Chatdata = null;
+    }
+
+   /* private void RecivedData(Socket sender, byte[] bytes)
     {
       int bytesRec = sender.Receive(bytes);
       data += Encoding.ASCII.GetString(bytes, 0, bytesRec);
@@ -488,7 +575,8 @@ public class ServerStatusManager : MonoBehaviour
 
       
             ClientUpdateDataManager(data);
-            Disconnected(sender);
+        ClientUpdateChatManager(data);
+        //Disconnected(sender);
             
 
         
@@ -498,7 +586,7 @@ public class ServerStatusManager : MonoBehaviour
         
         
 
-    }
+    }*/
 
     string ClientsIPAddress = "";
     public string GetIPAddress()
@@ -618,10 +706,66 @@ public class ServerStatusManager : MonoBehaviour
 
 
 
-    private void SendData(Socket sender, string data)
+    private void SendBroadcastData(Socket sender, string data)
     {
-        byte[] msg = Encoding.ASCII.GetBytes(data);
-        sender.Send(msg);
+        try
+        {
+            byte[] msg = Encoding.ASCII.GetBytes(data);
+            lock (socketList)
+            {
+
+                foreach (SocketInfo info in socketList)
+                {
+                    try
+                    {
+
+                        Debug.Log("CLIENT BROADCAST BACK: " + data);
+                        info.socket.Send(msg);
+                        
+
+                        // Debug.Log("Unable to send data. Connection lost.");
+                    }
+                    catch { }
+                }
+            }
+        }
+        catch
+        {
+            // Debug.Log("Unable to send data. Connection lost.");
+        }
+    }
+
+
+
+    private void SendSelfData(Socket sender, string data)
+    {
+        try
+        {
+            byte[] msg = Encoding.ASCII.GetBytes(data);
+            lock (socketList)
+            {
+
+                foreach (SocketInfo info in socketList)
+                {
+                    try
+                    {
+
+                        if (sender == info.socket)
+                        {
+                            Debug.Log("CLIENT SEND BACK: " + data);
+                            info.socket.Send(msg);
+                        }
+
+                        // Debug.Log("Unable to send data. Connection lost.");
+                    }
+                    catch { }
+                }
+            }
+        }
+        catch
+        {
+            // Debug.Log("Unable to send data. Connection lost.");
+        }
     }
 
     private int PingServerTime = 0;
@@ -641,11 +785,22 @@ public class ServerStatusManager : MonoBehaviour
 
         if (DataManager.Instance.GetUserState() == Construct._THREE && FullLogIn == true && ShowMenu == false)
         {
-           // Debug.Log("IT SEEMS WE ARE FULLY LOGIN");
+            Debug.Log("IT SEEMS WE ARE FULLY LOGIN");
             ServerStatusContainor.SetActive(false);
             MenuSwitchContainor.SetActive(true);
             ToggleMenu.GetComponent<Image>().sprite = Menuoff;
         }
+
+        if (Newmessage == true)
+        {
+            ClientUpdateChatManager(data);
+            Newmessage = false;
+        }
+        if (DataManager.Instance.GetUserState() == Construct._ONE || DataManager.Instance.GetUserState() == Construct._TWO)
+        {
+            ClientUpdateDataManager(data);
+        }
+
     }
 
     

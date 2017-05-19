@@ -11,7 +11,7 @@ public class UI_DestroyMessage : MonoBehaviour {
 
     public void OnClose()
     {
-        Destroy(gameObject,10);
+        Destroy(gameObject,30);
     }
 
    
